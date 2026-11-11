@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Instrument_Serif } from "next/font/google";
+import { AIPanelProvider } from "@/components/AIPanel";
 import { CartProvider } from "@/components/Cart";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Footer } from "@/components/Footer";
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" data-theme="light" className={`${display.variable} ${serif.variable}`} suppressHydrationWarning>
       <body className="min-h-dvh">
         <CartProvider>
+          <AIPanelProvider>
           <Header />
           <main id="page" className="gutter pt-[calc(var(--header-h)+40px)] max-xl:pt-[calc(var(--header-h)+35px)]">
             {children}
@@ -43,6 +45,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Footer />
           {/* AI assistant is built (components/AskAI.tsx + api/chat) but hidden for now — swap back in when ready */}
           <CookieBanner />
+          </AIPanelProvider>
         </CartProvider>
       </body>
     </html>

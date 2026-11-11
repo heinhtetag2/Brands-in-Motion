@@ -39,7 +39,7 @@ export function VideoBlock({
       >
         <motion.div
           className="absolute inset-0"
-          animate={{ scale: playing ? 1 : 0.985 }}
+          animate={{ scale: 1 }}
           transition={{ duration: 0.6, ease: easeExpo }}
         >
           <MotionArt seed={src} word={word} style={style} className={playing ? "" : "ma-paused"} />

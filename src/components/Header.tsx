@@ -4,26 +4,33 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { useEffect, useState } from "react";
-import { site } from "@/lib/data";
+import { findMenu, site } from "@/lib/data";
+import { useAIPanel } from "./AIPanel";
 import { useCart } from "./Cart";
 import { easeExpo } from "./Reveal";
 
 const main = [
-  { href: "/", label: "Resource", match: (p: string) => p === "/" || p.startsWith("/resource") },
-  { href: "/information", label: "Information", match: (p: string) => p.startsWith("/information") },
+  { href: "/", label: "Home", match: (p: string) => p === "/" },
   { href: "/jobs", label: "Jobs", match: (p: string) => p.startsWith("/jobs") },
   { href: "/shop", label: "Shop", match: (p: string) => p.startsWith("/shop") },
 ];
-const find = [
-  { href: "/directory", label: "Talent" },
-  { href: "/partner", label: "Agency Partner" },
-];
+// Nested menu (currently hidden): children are defined in lib/data.ts. Add a button that calls setFindOpen(true) to bring it back.
+const find = findMenu;
+// Top-level pages shown at the right of the desktop header: About, Works, Contact (the centred logo leaves no room in the nav row)
+const about = { href: "/about", label: "About", match: (p: string) => p.startsWith("/about") };
+// Project pages live under /resource, so they count as Works
+const works = { href: "/works", label: "Works", match: (p: string) => p.startsWith("/works") || p.startsWith("/resource") };
+const contact = { href: "/contact", label: "Contact", match: (p: string) => p.startsWith("/contact") };
 
-const DARK_ROUTES = ["/information"];
+// How many letters of the role the logo's "selection" runs into ("Pro" of "Product Designer")
+const SELECTED = 3;
+
+const DARK_ROUTES = ["/about"];
 
 export function Header() {
   const pathname = usePathname();
   const { count, setOpen } = useCart();
+  const ai = useAIPanel();
   const [findOpen, setFindOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -38,7 +45,7 @@ export function Header() {
     setScrolled(y > 40);
   });
 
-  // Page-level theme (Information is dark)
+  // Page-level theme (About is dark)
   useEffect(() => {
     document.documentElement.dataset.theme = DARK_ROUTES.some((r) => pathname.startsWith(r)) ? "dark" : "light";
   }, [pathname]);
@@ -51,7 +58,6 @@ export function Header() {
     setMenuOpen(false);
   }
 
-  const findActive = find.some((f) => pathname.startsWith(f.href));
   const cls = "u-hover";
 
   const items = findOpen ? (
@@ -67,15 +73,12 @@ export function Header() {
     </>
   ) : (
     <>
-      {main.slice(0, 2).map((m) => (
+      {main.slice(0, 1).map((m) => (
         <Link key={m.href} href={m.href} className={cls} data-active={m.match(pathname)}>
           {m.label}
         </Link>
       ))}
-      <button onClick={() => setFindOpen(true)} className={cls} data-active={findActive}>
-        Find +
-      </button>
-      {main.slice(2).map((m) => (
+      {main.slice(1).map((m) => (
         <Link key={m.href} href={m.href} className={cls} data-active={m.match(pathname)}>
           {m.label}
         </Link>
@@ -103,15 +106,53 @@ export function Header() {
     </AnimatePresence>
   );
 
+  // Sparkle button that opens the AI panel on the right
+  const aiButton = (
+    <button
+      onClick={ai.toggle}
+      aria-label={ai.open ? "Close assistant" : "Ask the assistant"}
+      aria-pressed={ai.open}
+      className="group grid size-8 place-items-center"
+    >
+      {/* AI sparkle: one large four-point star with two small ones that twinkle on hover */}
+      <svg viewBox="0 0 24 24" className="size-[22px]" fill="currentColor" aria-hidden="true">
+        <path
+          className="origin-[10px_13px] transition-transform duration-700 ease-expo group-hover:rotate-90 group-hover:scale-90"
+          d="M10 4c.5 5.2 3.300 8.300 8.500 9-5.200.7-8 3.800-8.500 9-.5-5.200-3.300-8.300-8.500-9C6.700 12.300 9.500 9.200 10 4Z"
+        />
+        <path
+          className="origin-[19px_5px] transition-transform duration-700 ease-expo group-hover:scale-125"
+          d="M19 1.500c.2 2.100 1.400 3.300 3.500 3.500-2.100.2-3.300 1.400-3.500 3.500-.2-2.100-1.400-3.300-3.500-3.500 2.100-.2 3.300-1.400 3.500-3.500Z"
+        />
+        <path
+          className="origin-[20px_19px] transition-transform duration-700 ease-expo group-hover:scale-0"
+          d="M20 16.800c.1 1.300.9 2.100 2.200 2.200-1.300.1-2.100.9-2.200 2.200-.1-1.300-.9-2.100-2.200-2.200 1.300-.1 2.100-.9 2.200-2.200Z"
+        />
+      </svg>
+    </button>
+  );
+
   const logo = (
     <Link href="/" aria-label={`${site.name} — home`} className="block">
       <motion.span
-        className="t-nav block whitespace-nowrap font-normal tracking-[-0.01em]"
+        className="t-nav flex items-center whitespace-nowrap font-normal tracking-[-0.01em]"
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: easeExpo, delay: 0.1 }}
       >
-        {site.name}
+        {/* Like a text selection in progress: covers the name and runs into the first letters of the role */}
+        <span className="relative py-[0.08em] pl-[0.22em] text-bg">
+          <motion.span
+            className="absolute inset-0 origin-left bg-fg"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.7, ease: easeExpo, delay: 0.35 }}
+          />
+          <span className="relative whitespace-pre">
+            {site.name} {site.role.slice(0, SELECTED)}
+          </span>
+        </span>
+        <span>{site.role.slice(SELECTED)}</span>
       </motion.span>
     </Link>
   );
@@ -124,15 +165,17 @@ export function Header() {
         ...find.map((f) => ({ key: f.href, label: f.label, href: f.href, active: pathname.startsWith(f.href) })),
       ]
     : [
-        ...main.slice(0, 2).map((m) => ({ key: m.href, label: m.label, href: m.href, active: m.match(pathname) })),
-        { key: "find", label: "Find +", onClick: () => setFindOpen(true), chevron: true, active: findActive },
-        ...main.slice(2).map((m) => ({ key: m.href, label: m.label, href: m.href, active: m.match(pathname) })),
+        ...main.slice(0, 1).map((m) => ({ key: m.href, label: m.label, href: m.href, active: m.match(pathname) })),
+        { key: about.href, label: about.label, href: about.href, active: about.match(pathname) },
+        { key: works.href, label: works.label, href: works.href, active: works.match(pathname) },
+        ...main.slice(1).map((m) => ({ key: m.href, label: m.label, href: m.href, active: m.match(pathname) })),
+        { key: contact.href, label: contact.label, href: contact.href, active: contact.match(pathname) },
       ];
 
   return (
     <>
       <motion.header
-        className={`fixed inset-x-0 top-0 z-50 transition-colors duration-500 ${scrolled && !menuOpen ? "bg-bg" : ""}`}
+        className={`ai-shift fixed inset-x-0 top-0 z-50 transition-colors duration-500 ${scrolled && !menuOpen ? "bg-bg" : ""}`}
         animate={{ y: hidden ? "-110%" : 0 }}
         transition={{ duration: 0.6, ease: easeExpo }}
       >
@@ -142,7 +185,7 @@ export function Header() {
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={findOpen ? "find" : "main"}
-                className="flex flex-nowrap gap-x-[34px] [&>*]:py-[0.1em]"
+                className={`flex flex-nowrap transition-[gap] duration-500 [&>*]:py-[0.1em] ${ai.open ? "gap-x-[18px]" : "gap-x-[34px]"}`}
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
@@ -153,14 +196,23 @@ export function Header() {
             </AnimatePresence>
           </nav>
           {logo}
-          <div className="justify-self-end">{cartButton}</div>
+          <div className={`t-nav flex items-center justify-self-end transition-[gap] duration-500 ${ai.open ? "gap-[18px]" : "gap-[34px]"}`}>
+            {[about, works, contact].map((l) => (
+              <Link key={l.href} href={l.href} className="u-hover py-[0.1em]" data-active={l.match(pathname)}>
+                {l.label}
+              </Link>
+            ))}
+            {cartButton}
+            {aiButton}
+          </div>
         </div>
 
         {/* Phones + tablets: logo left, thin "+" right that turns into "×" */}
         <div className="gutter flex h-[var(--header-h)] items-center justify-between xl:hidden">
           {logo}
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-4">
             {cartButton}
+            {aiButton}
             <button
               onClick={() => {
                 setMenuOpen((v) => !v);

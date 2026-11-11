@@ -7,16 +7,17 @@ export const easeExpo = [0.19, 1, 0.22, 1] as const;
 type Props = HTMLMotionProps<"div"> & { delay?: number; y?: number | string };
 
 /**
- * Text/blocks entrance, matching the reference ("flex" style): fades in while rising 2vh,
- * 0.8s on the expo-out curve, as soon as it enters the screen.
+ * Text/blocks entrance: rises smoothly from 36px below while fading in, on the expo-out curve,
+ * as soon as it enters the screen. (Images keep the window-style wipe in FlexImage.)
  */
-export function Reveal({ delay = 0, y = "2vh", children, ...rest }: Props) {
+export function Reveal({ delay = 0, y = 36, children, ...rest }: Props) {
   return (
     <motion.div
+      // Smooth rise: floats up from below into place while fading in
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.8, ease: easeExpo, delay }}
+      transition={{ duration: 1.1, ease: easeExpo, delay, opacity: { duration: 0.7, ease: "easeOut", delay } }}
       {...rest}
     >
       {children}
@@ -45,7 +46,10 @@ export function CardReveal({ children, className }: { children: React.ReactNode;
   );
 }
 
-/** Splits text into words that slide up from a mask, one after another. */
+/**
+ * Headline entrance: each word slides up from behind a mask, one after another.
+ * The mask is padded (and pulled back with a negative margin) so descenders aren't cut off.
+ */
 export function SplitText({
   text,
   className = "",
@@ -61,17 +65,20 @@ export function SplitText({
   return (
     <Tag className={className} aria-label={text}>
       {words.map((w, i) => (
-        <span key={i} className="inline-block overflow-hidden pb-[0.08em] align-top" aria-hidden="true">
-          <motion.span
-            className="inline-block"
-            initial={{ y: "105%" }}
-            whileInView={{ y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.2, ease: easeExpo, delay: delay + i * 0.045 }}
-          >
-            {w}
-            {i < words.length - 1 ? " " : ""}
-          </motion.span>
+        <span key={i} aria-hidden="true">
+          <span className="-mb-[0.22em] inline-block overflow-hidden pb-[0.22em] align-top">
+            <motion.span
+              className="inline-block will-change-transform"
+              initial={{ y: "115%", rotate: 4 }}
+              whileInView={{ y: 0, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.1, ease: easeExpo, delay: delay + i * 0.045 }}
+              style={{ transformOrigin: "0% 100%" }}
+            >
+              {w}
+            </motion.span>
+          </span>
+          {i < words.length - 1 ? " " : ""}
         </span>
       ))}
     </Tag>

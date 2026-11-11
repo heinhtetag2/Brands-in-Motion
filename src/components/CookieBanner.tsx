@@ -54,8 +54,10 @@ export function CookieBanner() {
         >
           <motion.div
             layout
+            // Full pill while closed; softer corners when the list opens so nothing gets clipped
+            style={{ borderRadius: manage ? 28 : 24 }}
             transition={{ duration: 0.45, ease: easeExpo }}
-            className="pointer-events-auto w-full max-w-[520px] overflow-hidden rounded-[18px] border border-line bg-bg text-[15px] text-fg shadow-[0_4px_20px_rgba(0,0,0,0.08)]"
+            className="pointer-events-auto w-full max-w-[520px] overflow-hidden border border-line bg-bg text-[15px] text-fg"
           >
             <AnimatePresence initial={false}>
               {manage && (
@@ -65,13 +67,13 @@ export function CookieBanner() {
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.45, ease: easeExpo }}
-                  className="overflow-hidden px-4"
+                  className="overflow-hidden px-6"
                 >
                   {options.map((o) => {
                     const locked = o.key === "necessary";
                     const on = locked || prefs[o.key as keyof Prefs];
                     return (
-                      <li key={o.key} className="flex items-center justify-between border-b border-line py-[9px] first:pt-3">
+                      <li key={o.key} className="flex items-center justify-between border-b border-line py-[9px] first:pt-4">
                         <span>
                           {o.label}
                           {locked && <span className="text-muted"> · always on</span>}
@@ -100,13 +102,13 @@ export function CookieBanner() {
               )}
             </AnimatePresence>
 
-            <div className="flex items-center gap-3 py-2 pl-4 pr-2 max-sm:flex-wrap">
+            <div className={`flex items-center gap-3 py-2 max-sm:flex-wrap ${manage ? "pb-3 pl-6 pr-4" : "pl-6 pr-2"}`}>
               <p className="mr-auto">We use cookies.</p>
               <button className="u-hover" onClick={() => (manage ? save(prefs) : setManage(true))}>
                 {manage ? "Save" : "Preferences"}
               </button>
               <div className="flex gap-1.5">
-                <button className={`${pill} hover:bg-fg hover:text-bg`} onClick={() => save({ analytics: false, marketing: false })}>
+                <button className={`${pill} fill-up`} onClick={() => save({ analytics: false, marketing: false })}>
                   Reject
                 </button>
                 <button className={`${pill} bg-fg text-bg hover:opacity-80`} onClick={() => save({ analytics: true, marketing: true })}>

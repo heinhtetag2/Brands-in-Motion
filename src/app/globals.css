@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Light is the default; the Information page flips the whole site to dark. */
+/* Light is the default; the About page flips the whole site to dark. */
 :root {
   --header-h: 64px; /* phones + tablets */
   --bg: #fafafa;
@@ -74,7 +74,46 @@ body {
   background-size: 100% 1px;
 }
 
-/* Pill button with arrow that nudges on hover */
+/*
+ * Pill button. On hover a fill rises from the bottom edge: its top edge starts curved and
+ * flattens as it climbs, while the text switches colour and the arrow nudges right.
+ * `.fill-up` gives any other button the same fill.
+ */
+.pill,
+.fill-up {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition: color 0.5s var(--ease-out-expo) 0.05s;
+}
+.pill::before,
+.fill-up::before {
+  content: "";
+  position: absolute;
+  inset: auto -1px -1px -1px;
+  height: calc(100% + 2px);
+  z-index: -1;
+  background: var(--fg);
+  transform: translateY(102%);
+  border-radius: 50% 50% 0 0 / 70% 70% 0 0;
+  transition:
+    transform 0.6s var(--ease-out-expo),
+    border-radius 0.6s var(--ease-out-expo);
+}
+.pill:hover::before,
+.fill-up:hover::before,
+.pill:focus-visible::before,
+.fill-up:focus-visible::before {
+  transform: translateY(0);
+  border-radius: 0;
+}
+.pill:hover,
+.fill-up:hover,
+.pill:focus-visible,
+.fill-up:focus-visible {
+  color: var(--bg);
+}
+
 .pill {
   display: inline-flex;
   align-items: center;
@@ -86,14 +125,6 @@ body {
   white-space: nowrap;
   font-size: clamp(1rem, 1.37vw, 1.5rem);
   line-height: 1;
-  transition:
-    background-color 0.5s var(--ease-out-expo),
-    color 0.5s var(--ease-out-expo);
-}
-.pill:hover {
-  background: var(--fg);
-  color: var(--bg);
-  border-color: var(--fg);
 }
 .pill .arrow {
   transition: transform 0.5s var(--ease-out-expo);
@@ -118,12 +149,19 @@ body {
   }
 }
 
+/* Right-side AI panel: on desktop the page and fixed header make room for it */
+:root { --ai-w: 0px; }
+@media (min-width: 64rem) {
+  body { padding-right: var(--ai-w); transition: padding-right 0.6s var(--ease-out-expo); }
+  .ai-shift { right: var(--ai-w) !important; transition: right 0.6s var(--ease-out-expo); }
+}
+
 /* Type scale measured from the reference at 1440px, scaled with the viewport */
 .t-h1 { font-size: clamp(2.2rem, 4.85vw, 6rem); line-height: 0.968; letter-spacing: 0; }
 .t-h2 { font-size: clamp(1.9rem, 3.65vw, 4.5rem); line-height: 1.1; letter-spacing: 0; }
-.t-h3 { font-size: clamp(1.5rem, 2.45vw, 3rem); line-height: 1.1; letter-spacing: 0; }
+.t-h3 { font-size: clamp(1.4rem, 2.15vw, 2.6rem); line-height: 1.1; letter-spacing: 0; }
 .t-lg { font-size: clamp(1.2rem, 1.85vw, 2.2rem); line-height: 1.15; letter-spacing: 0; }
-.t-nav { font-size: clamp(1.1rem, 1.49vw, 1.6rem); line-height: 1.1; }
+.t-nav { font-size: clamp(1.05rem, 1.35vw, 1.45rem); line-height: 1.1; }
 .t-sm { font-size: 13.5px; letter-spacing: 0.02em; text-transform: uppercase; }
 .gutter { padding-left: 4vw; padding-right: 4vw; }
 

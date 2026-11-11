@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { site } from "@/lib/data";
-import { ContactForm } from "./ContactForm";
 import { Reveal } from "./Reveal";
 
 const cols: Array<{ title: string; links: Array<[string, string]> }> = [
-  { title: "NAV", links: [["Resource", "/"], ["Information", "/information"]] },
-  { title: "INFO", links: [["Get Featured", `mailto:${site.email}`], ["Feature Guide", "/information"]] },
-  { title: "FIND", links: [["Talent", "/directory"], ["Your Agency", "/partner"]] },
-  { title: "DIRECTORY", links: [["Apply to The Directory", "/partner"], ["Directory Guide", "/directory"]] },
+  { title: "NAV", links: [["Home", "/"], ["About", "/about"]] },
+  { title: "INFO", links: [["Say hello", `mailto:${site.email}`], ["About me", "/about"]] },
+  { title: "FIND", links: [["Works", "/works"], ["Contact", "/contact"]] },
+  { title: "WORKS", links: [["All projects", "/works"], ["Start a project", "/contact"]] },
 ];
 
 // Column positions from the reference at 1440px: 275px apart, copyright 81px below.
@@ -16,13 +15,8 @@ export function Footer() {
     <footer className="gutter relative mt-[150px] pb-[21px]">
       <hr className="absolute inset-x-[4vw] top-[9px] border-[#808080]" />
 
-      {/* Contact row: big line on the left, form on the right */}
-      <Reveal className="grid gap-8 pt-[60px] md:grid-cols-[repeat(2,19.1vw)_1fr] md:items-end">
-        <h2 className="t-h2 md:col-span-1">Let&rsquo;s talk.</h2>
-        <ContactForm />
-      </Reveal>
 
-      <Reveal className="mt-[80px] grid grid-cols-2 gap-y-10 md:grid-cols-[repeat(4,19.1vw)_1fr] md:gap-y-0">
+      <Reveal className="pt-[60px] grid grid-cols-2 gap-y-10 md:grid-cols-[repeat(4,19.1vw)_1fr] md:gap-y-0">
         {cols.map((col) => (
           <div key={col.title} className="md:w-[14.5vw]">
             <p className="mb-[11px]">{col.title}</p>

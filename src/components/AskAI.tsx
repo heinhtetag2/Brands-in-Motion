@@ -4,13 +4,12 @@ import { useChat } from "@ai-sdk/react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { site } from "@/lib/data";
 import { easeExpo } from "./Reveal";
 
-const suggestions = ["Find a 3D studio", "Any remote jobs?", "Show me interviews", "What's on sale?"];
+const suggestions = ["What does Hein Htet do?", "Show me the projects", "How do I get in touch?", "What's in the shop?"];
 
 /** Renders the small subset of markdown the assistant uses: links, **bold** and "- " lists. */
-function Rich({ text, onNavigate }: { text: string; onNavigate: () => void }) {
+export function Rich({ text, onNavigate }: { text: string; onNavigate: () => void }) {
   const inline = (line: string) =>
     line.split(/(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*)/g).map((chunk, i) => {
       const link = chunk.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
@@ -49,7 +48,7 @@ function Rich({ text, onNavigate }: { text: string; onNavigate: () => void }) {
   );
 }
 
-function errorText(error: Error) {
+export function errorText(error: Error) {
   try {
     return (JSON.parse(error.message) as { error?: string }).error ?? error.message;
   } catch {
@@ -67,6 +66,8 @@ export function AskAI() {
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const busy = status === "submitted" || status === "streaming";
+  // Expanded while focused, typing, answering, or showing the conversation
+  const active = focused || open || busy || input.length > 0;
 
   // Slide the bar in shortly after the page loads
   useEffect(() => {
@@ -95,13 +96,13 @@ export function AskAI() {
   };
 
   const pill =
-    "rounded-full bg-[#0f0f0f] px-6 py-[11px] text-white transition-[transform,background-color,opacity] duration-300 hover:bg-[#333] active:scale-[0.97] disabled:opacity-30";
+    "rounded-full border border-fg bg-fg px-[14px] py-[5px] leading-none text-bg transition-opacity duration-300 hover:opacity-80 disabled:opacity-30";
 
   return (
     <AnimatePresence>
       {shown && (
         <motion.div
-          className="pointer-events-none fixed inset-x-0 bottom-[18px] z-[55] flex justify-center px-3"
+          className="pointer-events-none fixed inset-x-0 bottom-4 z-[55] flex justify-center px-3"
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 40, opacity: 0 }}
@@ -109,8 +110,13 @@ export function AskAI() {
         >
           <motion.div
             layout
-            transition={{ duration: 0.5, ease: easeExpo }}
-            className="pointer-events-auto w-full max-w-[816px] overflow-hidden rounded-[22px] bg-white text-[17px] text-[#0f0f0f] shadow-[0_6px_30px_rgba(0,0,0,0.12)] ring-1 ring-black/5"
+            // Small pill at rest; eases out to full width while you're using it
+            initial={false}
+            animate={{ width: active ? 520 : 168 }}
+            style={{ borderRadius: 24 }}
+            transition={{ duration: 0.6, ease: easeExpo }}
+            onClick={() => inputRef.current?.focus()}
+            className={`pointer-events-auto max-w-full overflow-hidden border border-line bg-bg text-[15px] text-fg ${active ? "" : "cursor-pointer"}`}
           >
             {/* Conversation */}
             <AnimatePresence initial={false}>
@@ -123,11 +129,11 @@ export function AskAI() {
                   transition={{ duration: 0.5, ease: easeExpo }}
                   className="overflow-hidden"
                 >
-                  <div className="flex items-center justify-between border-b border-black/10 px-5 py-3 text-sm sm:px-6">
-                    <span className="text-black/50">Ask {site.name}</span>
+                  <div className="flex items-center justify-between border-b border-line px-4 py-2 text-[13px]">
+                    <span className="text-muted">Ask about this site</span>
                     <div className="flex gap-4">
                       <button
-                        className="text-black/50 hover:text-black"
+                        className="u-hover"
                         onClick={() => {
                           stop();
                           setMessages([]);
@@ -137,13 +143,13 @@ export function AskAI() {
                       >
                         Clear
                       </button>
-                      <button className="text-black/50 hover:text-black" onClick={() => setOpen(false)} aria-label="Minimise chat">
+                      <button className="u-hover" onClick={() => setOpen(false)} aria-label="Minimise chat">
                         Close
                       </button>
                     </div>
                   </div>
 
-                  <div ref={listRef} className="max-h-[min(56vh,520px)] space-y-5 overflow-y-auto px-5 py-5 sm:px-6">
+                  <div ref={listRef} className="max-h-[min(50vh,380px)] space-y-3 overflow-y-auto px-4 py-4">
                     {messages.map((m) => {
                       const text = m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
                       return m.role === "user" ? (
@@ -154,7 +160,7 @@ export function AskAI() {
                           transition={{ duration: 0.4, ease: easeExpo }}
                           className="flex justify-end"
                         >
-                          <p className="max-w-[80%] rounded-[18px] bg-[#f0f0f0] px-4 py-2">{text}</p>
+                          <p className="max-w-[80%] rounded-[14px] bg-surface px-3 py-1.5">{text}</p>
                         </motion.div>
                       ) : (
                         <motion.div
@@ -174,7 +180,7 @@ export function AskAI() {
                         {[0, 1, 2].map((i) => (
                           <motion.span
                             key={i}
-                            className="size-2 rounded-full bg-black/40"
+                            className="size-1.5 rounded-full bg-fg/50"
                             animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
                             transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.15 }}
                           />
@@ -182,7 +188,7 @@ export function AskAI() {
                       </div>
                     )}
 
-                    {error && <p className="rounded-[14px] bg-[#f6f6f6] px-4 py-3 text-[15px] text-black/60">{errorText(error)}</p>}
+                    {error && <p className="rounded-[12px] bg-surface px-3 py-2 text-[14px] text-fg/70">{errorText(error)}</p>}
                   </div>
                 </motion.div>
               )}
@@ -199,13 +205,13 @@ export function AskAI() {
                   transition={{ duration: 0.4, ease: easeExpo }}
                   className="overflow-hidden"
                 >
-                  <div className="flex flex-wrap gap-2 px-5 pt-4 sm:px-6">
+                  <div className="flex flex-wrap gap-1.5 px-4 pt-3">
                     {suggestions.map((s) => (
                       <button
                         key={s}
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => ask(s)}
-                        className="rounded-full border border-black/15 px-4 py-1.5 text-[15px] transition-colors hover:border-black hover:bg-black hover:text-white"
+                        className="rounded-full border border-line px-3 py-1 text-[13px] leading-none transition-colors hover:border-fg hover:bg-fg hover:text-bg"
                       >
                         {s}
                       </button>
@@ -221,9 +227,9 @@ export function AskAI() {
                 e.preventDefault();
                 ask(input);
               }}
-              className="flex items-center gap-3 py-[10px] pl-5 pr-[10px] sm:pl-6"
+              className="flex h-[43px] items-center gap-2.5 pl-4 pr-2"
             >
-              <svg viewBox="0 0 24 24" className="size-5 shrink-0" fill="currentColor" aria-hidden="true">
+              <svg viewBox="0 0 24 24" className="size-4 shrink-0" fill="currentColor" aria-hidden="true">
                 <path d="M12 2c.4 4.6 2.4 6.6 7 7-4.6.4-6.6 2.4-7 7-.4-4.6-2.4-6.6-7-7 4.6-.4 6.6-2.4 7-7Zm7 11c.2 2.3 1.2 3.3 3.5 3.5-2.3.2-3.3 1.2-3.5 3.5-.2-2.3-1.2-3.3-3.5-3.5 2.3-.2 3.3-1.2 3.5-3.5Z" />
               </svg>
               <input
@@ -235,24 +241,39 @@ export function AskAI() {
                   if (messages.length) setOpen(true);
                 }}
                 onBlur={() => setFocused(false)}
-                placeholder={messages.length ? "Ask a follow-up…" : "Ask anything — studios, jobs, stories…"}
+                placeholder={!active ? "Ask AI" : messages.length ? "Ask a follow-up…" : "Ask anything about this site…"}
                 aria-label="Ask the assistant"
-                className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-black/40"
+                className={`min-w-0 flex-1 bg-transparent outline-none transition-colors duration-300 ${active ? "placeholder:text-muted" : "cursor-pointer placeholder:text-fg"}`}
               />
-              {!open && messages.length > 0 && (
-                <button type="button" className="shrink-0 text-[15px] underline underline-offset-4 hover:opacity-60" onClick={() => setOpen(true)}>
+              {active && !open && messages.length > 0 && (
+                <button type="button" className="u-hover shrink-0" onClick={() => setOpen(true)}>
                   Show chat
                 </button>
               )}
-              {busy ? (
-                <button type="button" onClick={stop} className={pill}>
-                  Stop
-                </button>
-              ) : (
-                <button type="submit" disabled={!input.trim()} className={pill}>
-                  Ask
-                </button>
-              )}
+              <AnimatePresence initial={false}>
+                {active && (
+                  <motion.span
+                    key="action"
+                    className="shrink-0"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.3, ease: easeExpo }}
+                  >
+                    {busy ? (
+                      <button type="button" onClick={stop} className={pill}>
+                        Stop
+                      </button>
+                    ) : (
+                      // Keep focus in the input so the bar doesn't collapse mid-click
+                      <button type="submit" disabled={!input.trim()} onMouseDown={(e) => e.preventDefault()} className={pill}>
+                        Ask
+                      </button>
+                    )}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+              {!active && messages.length > 0 && <span className="size-1.5 shrink-0 rounded-full bg-fg" aria-label="Chat in progress" />}
             </form>
           </motion.div>
         </motion.div>

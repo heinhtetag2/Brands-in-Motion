@@ -2,10 +2,12 @@
 // every page reads only from here.
 
 export const site = {
-  name: "Index of Motion",
-  tagline: "An independent resource celebrating the best motion design in branding.",
+  name: "Hein Htet",
+  /** Shown after the highlighted name in the header logo */
+  role: "Product Designer",
+  tagline: "Portfolio of Hein Htet, a product designer: UI/UX, websites and brand systems.",
   instagram: "https://instagram.com",
-  email: "hello@example.com",
+  email: "heincise@gmail.com",
 };
 
 /** Seed for <MotionArt>; each seed always renders the same animated piece. */
@@ -111,55 +113,43 @@ export const posts: Post[] = raw.map(([title, label, category], i) => ({
 
 export const getPost = (slug: string) => posts.find((p) => p.slug === slug);
 
-/* ---------- Talent directory ---------- */
+/* ---------- About page ---------- */
 
-export const talentTags = [
-  "Individual", "Studio", "2D", "3D", "After Effects", "AI", "Blender", "Cell", "Cavalry",
-  "Cinema 4D", "Houdini", "Live Action", "Mixed Media", "Nuke", "Octane", "Redshift", "Rive",
-] as const;
-export type TalentTag = (typeof talentTags)[number];
-
-export type Talent = {
-  name: string;
-  tags: TalentTag[];
-  email: string;
-  website: string;
-  handle: string;
-  image: string;
+/** Sample copy and numbers: replace everything here with your own story. */
+export const about = {
+  statement: "I’m a UI/UX designer who turns complex ideas into clear, usable products.",
+  intro: [
+    "I design digital products, websites and brand systems, from the first sketch all the way to the final build.",
+    "I work best when research, design and engineering sit at the same table, so I look for the simplest idea that solves a real problem for real people.",
+    "I care about the details people feel without noticing: spacing, motion, copy and the small moments between screens.",
+    "I’m open to new projects and collaborations, so if something here sparks an idea, let’s talk.",
+  ],
+  howTitle: "How I Work",
+  how: [
+    "Understand first. I start with the people and the problem: interviews, audits and a clear brief before any pixels.",
+    "Design in the open. Rough ideas early, honest feedback often, and prototypes you can click rather than slides you have to imagine.",
+    "Ship and learn. I stay close through build and launch, then look at what people actually do and keep improving it.",
+  ],
+  numbersTitle: "By the Numbers",
+  numbersIntro: "A quick snapshot of the work so far.",
+  stats: [
+    { to: 5, decimals: 0, suffix: "+", label: "Years designing" },
+    { to: 30, decimals: 0, suffix: "+", label: "Projects shipped" },
+    { to: 15, decimals: 0, suffix: "+", label: "Happy clients" },
+  ],
 };
 
-const talentRaw: Array<[string, TalentTag[]]> = [
-  ["Sean Harper", ["Individual", "2D", "After Effects"]],
-  ["Wrong Room", ["Studio", "3D", "Cinema 4D", "Cavalry", "Redshift"]],
-  ["Oren Shai", ["Individual", "3D", "Cinema 4D", "Redshift"]],
-  ["Stu Creative", ["Studio", "3D", "Mixed Media", "Rive"]],
-  ["Reece Palmer", ["Studio", "2D", "Cell", "After Effects"]],
-  ["Fieldwork", ["Studio", "2D", "After Effects"]],
-  ["Theresa Hahn", ["Individual", "3D", "Cell", "Mixed Media"]],
-  ["Tal Uri", ["Individual", "Studio", "3D", "Mixed Media"]],
-  ["Nea Studio", ["Studio", "3D", "Blender", "Cinema 4D"]],
-  ["Ivan Iarov", ["Individual", "3D", "Houdini", "Redshift"]],
-  ["Marwan Kay", ["Individual", "3D", "Cinema 4D", "After Effects"]],
-  ["Nadia Diaz", ["Individual", "3D", "Cinema 4D", "Octane"]],
-  ["The Rusty Pixel", ["Studio", "Cinema 4D", "Redshift"]],
-  ["Alex Prado", ["Individual", "3D", "Octane", "Redshift"]],
-  ["Edgar Fern", ["Individual", "3D", "Octane", "AI"]],
-  ["Jack Keon", ["Individual", "2D", "Cavalry", "Rive"]],
-  ["Seventeen", ["Studio", "3D", "Live Action", "Houdini", "Nuke"]],
-  ["Paloma Ruiz", ["Individual", "2D", "Cell", "AI"]],
-];
+/* ---------- Nested menu ("Find +") ---------- */
 
-export const talents: Talent[] = talentRaw.map(([name, tags]) => {
-  const s = slugify(name);
-  return {
-    name,
-    tags,
-    email: `hello@${s.replace(/-/g, "")}.com`,
-    website: `${s.replace(/-/g, "")}.com`,
-    handle: `@${s.replace(/-/g, "_")}`,
-    image: img(`talent-${s}`, 900, 900),
-  };
-});
+/**
+ * Demo child pages for the "Find +" menu. Replace the labels/links with real pages later;
+ * each href currently opens a simple placeholder page at /more/<slug>.
+ */
+export const findMenu = [
+  { href: "/more/child-menu-1", label: "Child menu 1" },
+  { href: "/more/child-menu-2", label: "Child menu 2" },
+  { href: "/more/child-menu-3", label: "Child menu 3" },
+];
 
 /* ---------- Jobs ---------- */
 

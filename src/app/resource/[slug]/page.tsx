@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { PostCard } from "@/components/PostCard";
 import { ProjectHero } from "@/components/ProjectHero";
 import { Reveal } from "@/components/Reveal";
 import { VideoBlock } from "@/components/VideoBlock";
@@ -40,6 +42,8 @@ async function Article({
   if (!post) notFound();
 
   const month = post.date.split(" ").slice(1).join(" ");
+  const others = posts.filter((p) => p.slug !== post.slug);
+  const related = [...others.filter((p) => p.category === post.category), ...others.filter((p) => p.category !== post.category)].slice(0, 3);
 
   return (
     <article>
@@ -106,25 +110,31 @@ async function Article({
 
             {k < post.sections.length - 1 && (
               <div className="mt-[150px]">
-                {k % 2 === 1 ? (
-                  <div className="md:mx-auto md:w-[30%]">
-                    <VideoBlock
-                      src={`${post.image}-tall-${k}`}
-                      ratio="9 / 16"
-                      style="bars"
-                    />
-                  </div>
-                ) : (
-                  <VideoBlock
-                    src={`${post.image}-wide-${k}`}
-                    word={post.label.split(" ")[0]}
-                  />
-                )}
+                <VideoBlock
+                  src={`${post.image}-wide-${k}`}
+                  word={post.label.split(" ")[0]}
+                />
               </div>
             )}
           </section>
         );
       })}
+
+      {/* Related projects: same category first, then the next ones in the list */}
+      <section className="mt-[150px] max-md:mt-24">
+        <hr className="border-[#808080]" />
+        <Reveal className="flex items-baseline justify-between pb-[60px] pt-6">
+          <h2 className="t-h2">Explore related projects</h2>
+          <Link href="/works" className="u-hover">
+            All projects →
+          </Link>
+        </Reveal>
+        <div className="grid gap-y-[60px] sm:grid-cols-2 sm:gap-x-[4vw] lg:grid-cols-3 lg:gap-x-[5vw]">
+          {related.map((p) => (
+            <PostCard key={p.slug} post={p} index={posts.indexOf(p)} />
+          ))}
+        </div>
+      </section>
     </article>
   );
 }
