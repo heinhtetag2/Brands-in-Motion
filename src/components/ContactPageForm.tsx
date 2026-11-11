@@ -14,12 +14,11 @@ const fields = [
 
 const needs = ["Product design", "Website", "Mobile app", "Design system", "Branding", "Something else"];
 
-/**
- * Contact form. Submitting opens the visitor's email app with the message ready to send to
- * site.email. To deliver straight to an inbox instead, connect an email service and post to an API route.
- */
+/** Contact form. Submitting posts to /api/contact, which emails site.email through Resend. */
 export function ContactPageForm() {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
   const [picked, setPicked] = useState<string[]>([]);
 
   return (
@@ -32,35 +31,33 @@ export function ContactPageForm() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: easeExpo }}
         >
-          <p className="text-[clamp(1.8rem,3vw,2.8rem)]">Thanks, your email app should now be open.</p>
-          <p className="mt-4 text-muted">
-            If nothing opened, write to{" "}
-            <a href={`mailto:${site.email}`} className="u-hover text-fg">
-              {site.email}
-            </a>
-            .
-          </p>
+          <p className="text-[clamp(1.8rem,3vw,2.8rem)]">Thanks, your message is on its way.</p>
+          <p className="mt-4 text-muted">I read every message and will reply to your email soon.</p>
         </motion.div>
       ) : (
         <motion.form
           key="form"
           exit={{ opacity: 0, y: -20 }}
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
+            if (sending) return;
             const f = new FormData(e.currentTarget);
-            const get = (k: string) => String(f.get(k) ?? "").trim();
-            const lines = [
-              get("message"),
-              "",
-              `Name: ${get("name")}`,
-              `Email: ${get("email")}`,
-              get("company") && `Company: ${get("company")}`,
-              get("website") && `Website: ${get("website")}`,
-              picked.length > 0 && `Looking for: ${picked.join(", ")}`,
-            ].filter((l) => l !== false);
-            const subject = encodeURIComponent(`Project enquiry from ${get("name")}`);
-            window.location.href = `mailto:${site.email}?subject=${subject}&body=${encodeURIComponent(lines.join("\n"))}`;
-            setSent(true);
+            setSending(true);
+            setError("");
+            try {
+              const res = await fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...Object.fromEntries(f), needs: picked }),
+              });
+              const data = await res.json().catch(() => ({}));
+              if (!res.ok) throw new Error(data.error ?? "Your message couldn't be sent. Please try again.");
+              setSent(true);
+            } catch (err) {
+              setError(err instanceof Error ? err.message : "Your message couldn't be sent. Please try again.");
+            } finally {
+              setSending(false);
+            }
           }}
           className="grid max-w-[820px] gap-x-8 gap-y-7 pt-2 md:grid-cols-2"
         >
@@ -115,9 +112,38 @@ export function ContactPageForm() {
             </label>
           </Reveal>
 
+          {/* Hidden from people; catches spam bots that fill every field. */}
+          <input type="text" name="nickname" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
+
+          {error && (
+            <p role="alert" className="md:col-span-2 text-red-600">
+              {error} You can also write to{" "}
+              <a href={`mailto:${site.email}`} className="u-hover underline">
+                {site.email}
+              </a>
+              .
+            </p>
+          )}
+
           <Reveal>
-            <button className="pill text-lg">
-              Send message <span className="arrow">→</span>
+            <button className="pill text-lg" disabled={sending} aria-busy={sending}>
+              <span className="inline-grid place-items-center [&>*]:[grid-area:1/1]">
+                <span className={sending ? "invisible" : undefined}>
+                  Send message <span className="arrow">→</span>
+                </span>
+                {sending && (
+                  <span role="status" aria-label="Sending message" className="inline-flex gap-1">
+                    {[0, 0.15, 0.3].map((d) => (
+                      <motion.span
+                        key={d}
+                        className="size-[5px] rounded-full bg-current"
+                        animate={{ y: [0, -4, 0, 0] }}
+                        transition={{ duration: 1.1, delay: d, repeat: Infinity, ease: "easeInOut", times: [0, 0.3, 0.6, 1] }}
+                      />
+                    ))}
+                  </span>
+                )}
+              </span>
             </button>
           </Reveal>
         </motion.form>
