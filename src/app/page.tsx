@@ -29,7 +29,7 @@ export default function Home() {
         <div className="md:w-[72%]">
           <Reveal>
             <p className="t-lg mb-8 text-fg/65">
-              Hi, I&rsquo;m {site.name}, a {site.role.toLowerCase()}.
+              Hi, I&rsquo;m {site.name}, a {site.roleInline}.
             </p>
           </Reveal>
           <SplitText text={about.statement} className="t-h1" delay={0.15} />

@@ -4,8 +4,10 @@
 export const site = {
   name: "Hein Htet",
   /** Shown after the highlighted name in the header logo */
-  role: "Product Designer",
-  tagline: "Portfolio of Hein Htet, a product designer: UI/UX, websites and brand systems.",
+  role: "UI/UX Designer",
+  /** Same role, lower case, for use inside a sentence ("a UI/UX designer") */
+  roleInline: "UI/UX designer",
+  tagline: "Portfolio of Hein Htet, a UI/UX designer: product design, websites and brand systems.",
   email: "heincise@gmail.com",
   instagram: "https://www.instagram.com/izheinn/",
   linkedin: "https://www.linkedin.com/in/hein-htet-a67368260/",
@@ -22,27 +24,14 @@ export const profile = {
   headline: "Designing experiences powered by AI thinking",
   summary:
     "I combine UI/UX craft with AI-driven workflows to design products that feel intuitive and ship faster.",
+  /** One list for the About page and the AI chat: short, clear, no "I" so it reads well in both. */
   services: [
-    {
-      title: "AI-enhanced UX research & strategy",
-      text: "I use AI tools to accelerate user research, synthesize insights and define product direction, turning weeks of discovery into days without losing depth.",
-    },
-    {
-      title: "Design systems & pixel-perfect interfaces",
-      text: "From design tokens to production-ready components, I craft scalable design systems and high-fidelity interfaces that stay consistent across every touchpoint.",
-    },
-    {
-      title: "Rapid prototyping with AI workflows",
-      text: "I use AI-powered design and development tools to go from concept to interactive prototype fast, validating ideas early and iterating with real user feedback.",
-    },
-    {
-      title: "Usability testing & product validation",
-      text: "I validate designs with real users: usability sessions, honest feedback and tracking the outcomes that matter, then iterate until people genuinely succeed with the product.",
-    },
-    {
-      title: "Brand identity & visual direction",
-      text: "I shape how a product looks and feels beyond the interface (brand identity, illustration and motion) so the visuals tell the same story as the product.",
-    },
+    { title: "UI/UX design", text: "Web and mobile interfaces, from wireframes to polished, production-ready screens." },
+    { title: "UX research & strategy", text: "Understand your users, find the real problem and set the product direction, sped up with AI tools." },
+    { title: "Design systems", text: "Tokens and reusable components that keep every screen consistent." },
+    { title: "Prototyping", text: "Clickable prototypes that test ideas with real feedback before anything is built." },
+    { title: "Usability testing", text: "Real users and honest feedback, improved until people succeed with the product." },
+    { title: "Brand & motion", text: "Brand identity, illustration and motion that match the product." },
   ],
   skills: {
     "Design & UX": ["UI/UX Design", "Design Systems", "Interaction Design", "UX Research & Testing", "Wireframing & Prototyping"],
@@ -59,10 +48,10 @@ export const profile = {
       text: "Works across every stage of the product: framing the business problem, researching what users really need, prototyping, design systems, visual graphics and illustration, right through to shipping the software. Partners closely with stakeholders, clients and developers.",
       highlights: [
         "Starts from the business problem, turns it into a clear product idea and aligns it with stakeholders and clients",
-        "Runs agentic AI workflows to research, ideate and prototype in a fraction of the time",
+        "Prototypes and validates ideas early with AI-assisted tools, then iterates with real user feedback",
         "Pinpoints user problems and solves them fast, balancing user needs with business goals",
       ],
-      outcomes: ["30% faster design-to-dev handoff", "Owns both design and front-end (UX + Dev), so nothing is lost in handoff", "20+ products launched"],
+      outcomes: ["90% faster design-to-dev handoff", "Owns both design and front-end (UX + Dev), so nothing is lost in handoff", "20+ products launched"],
     },
     {
       role: "Freelance Designer",
@@ -182,7 +171,7 @@ export const getPost = (slug: string) => posts.find((p) => p.slug === slug);
 
 /** Sample copy and numbers: replace everything here with your own story. */
 export const about = {
-  statement: "I’m a UI/UX designer who turns complex ideas into clear, usable products.",
+  statement: "I turn complex ideas into clear, usable products.",
   intro: [
     "I design digital products, websites and brand systems, from the first sketch all the way to the final build.",
     "I work best when research, design and engineering sit at the same table, so I look for the simplest idea that solves a real problem for real people.",

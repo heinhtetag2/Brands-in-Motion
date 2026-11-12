@@ -51,7 +51,7 @@ export function ProjectHero({ seed, word, client, title }: { seed: string; word:
 
       <motion.h1
         style={{ opacity: titleOpacity }}
-        className="gutter absolute inset-x-0 bottom-[2.6vw] text-[clamp(2.6rem,6.9vw,8.5rem)] leading-[1.02] tracking-[-0.02em] text-white max-md:bottom-6"
+        className="gutter absolute inset-x-0 bottom-[2.6vw] text-[clamp(2.1rem,5.2vw,6.6rem)] leading-[1.02] tracking-[-0.02em] text-white max-md:bottom-6"
       >
         {line(client, 0.25, "text-white/65")}
         {line(title, 0.35, "")}

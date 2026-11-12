@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, type HTMLMotionProps } from "motion/react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 export const easeExpo = [0.19, 1, 0.22, 1] as const;
 
@@ -47,8 +48,10 @@ export function CardReveal({ children, className }: { children: React.ReactNode;
 }
 
 /**
- * Headline entrance: each word slides up from behind a mask, one after another.
- * The mask is padded (and pulled back with a negative margin) so descenders aren't cut off.
+ * Headline entrance: each *line* rises as one piece from behind an invisible edge, with a small tilt
+ * that straightens as it lands, and a short delay between lines. Lines are measured from the real layout
+ * (and re-measured on resize), so it works at any width. The mask is padded, then pulled back with a
+ * negative margin, so descenders (g, p, y) aren't cut off.
  */
 export function SplitText({
   text,
@@ -61,26 +64,67 @@ export function SplitText({
   delay?: number;
   as?: "h1" | "h2" | "p";
 }) {
+  const measureRef = useRef<HTMLSpanElement>(null);
+  const [lines, setLines] = useState<string[] | null>(null);
   const words = text.split(" ");
+
+  useLayoutEffect(() => {
+    const el = measureRef.current;
+    if (!el) return;
+    const calc = () => {
+      const out: string[] = [];
+      let top = -1;
+      el.querySelectorAll<HTMLElement>("[data-w]").forEach((w) => {
+        const t = Math.round(w.getBoundingClientRect().top);
+        if (out.length === 0 || Math.abs(t - top) > 4) {
+          out.push(w.textContent ?? "");
+          top = t;
+        } else {
+          out[out.length - 1] += ` ${w.textContent}`;
+        }
+      });
+      setLines((prev) => (prev && prev.join("|") === out.join("|") ? prev : out));
+    };
+    calc();
+    const ro = new ResizeObserver(calc);
+    ro.observe(el);
+    document.fonts?.ready.then(calc);
+    return () => ro.disconnect();
+  }, [text]);
+
   return (
-    <Tag className={className} aria-label={text}>
-      {words.map((w, i) => (
-        <span key={i} aria-hidden="true">
-          <span className="-mb-[0.22em] inline-block overflow-hidden pb-[0.22em] align-top">
+    <Tag className={`relative ${className}`} aria-label={text}>
+      {/* Invisible copy used only to find where the lines break */}
+      <span ref={measureRef} aria-hidden="true" className="pointer-events-none invisible absolute inset-x-0 top-0">
+        {words.map((w, i) => (
+          <span key={i}>
+            <span data-w>{w}</span>
+            {i < words.length - 1 ? " " : ""}
+          </span>
+        ))}
+      </span>
+
+      {lines === null ? (
+        // Before measuring: reserve the same space, invisible
+        <span aria-hidden="true" className="opacity-0">
+          {text}
+        </span>
+      ) : (
+        lines.map((line, i) => (
+          <span key={i} aria-hidden="true" className="-mb-[0.22em] block overflow-hidden pb-[0.22em]">
             <motion.span
-              className="inline-block will-change-transform"
-              initial={{ y: "115%", rotate: 4 }}
+              className="block whitespace-nowrap will-change-transform"
+              style={{ transformOrigin: "0% 100%" }}
+              initial={{ y: "108%", rotate: 3.5 }}
               whileInView={{ y: 0, rotate: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 1.1, ease: easeExpo, delay: delay + i * 0.045 }}
-              style={{ transformOrigin: "0% 100%" }}
+              transition={{ duration: 1.2, ease: easeExpo, delay: delay + i * 0.11 }}
             >
-              {w}
+              {line}
             </motion.span>
           </span>
-          {i < words.length - 1 ? " " : ""}
-        </span>
-      ))}
+        ))
+      )}
     </Tag>
   );
 }

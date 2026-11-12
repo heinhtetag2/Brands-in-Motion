@@ -28,7 +28,7 @@ const topics: Topic[] = [
     id: "who",
     keys: ["who", "yourself", "introduce", "background", "bio", "hein", "htet", "what does", "what do you do", "designer"],
     answer: () =>
-      `${site.name} is a ${site.role.toLowerCase()} who combines UI/UX craft with AI-driven workflows to design products that feel intuitive and ship faster.\n\n` +
+      `${site.name} is a ${site.roleInline} who combines design craft with AI-driven workflows to design products that feel intuitive and ship faster.\n\n` +
       `Right now ${first} is a **${job.role} at ${job.company}** (${job.period.toLowerCase()}) and also freelances for startups and brands around the world. ` +
       `So far that's **${n.projects}+ projects shipped** for **${n.clients}+ clients** across **${n.industries} industries** in **${n.countries} countries**.\n\n` +
       `More on the ${link("About page", "/about")}.`,
@@ -38,7 +38,7 @@ const topics: Topic[] = [
     id: "services",
     keys: ["service", "services", "offer", "help with", "can you do", "specialize", "speciality", "specialty", "what can", "provide", "work on"],
     answer: () =>
-      `${first} can help with:\n${list(profile.services.map((s) => `**${s.title}**: ${third(s.text)}`))}\n\nHave something in mind? ${link("Start a project", "/contact")}.`,
+      `${first} is a UI/UX designer, and these are the services:\n${list(profile.services.map((s) => `**${s.title}**: ${s.text}`))}\n\nBecause ${first} also works on the front-end, designs go to developers without getting lost in handoff. Have something in mind? ${link("Start a project", "/contact")}.`,
     next: ["What tools and skills do you use?", "How do you use AI in design?", "How much does a project cost?"],
   },
   {
@@ -51,12 +51,12 @@ const topics: Topic[] = [
   },
   {
     id: "ai",
-    keys: ["ai", "artificial", "agentic", "prompt", "chatgpt", "claude", "automation", "faster", "generative"],
+    keys: ["ai", "artificial", "prompt", "chatgpt", "claude", "automation", "faster", "generative"],
     answer: () =>
       `AI is central to how ${first} works:\n${list([
-        third(profile.services[0].text),
-        third(profile.services[2].text),
-        `At ${job.company}, ${first} runs agentic AI workflows to research, ideate and prototype in a fraction of the time.`,
+        `${first} uses AI tools to speed up user research, synthesis and product direction, turning weeks of discovery into days.`,
+        `${first} prototypes with AI-powered design and development tools, so ideas are validated early with real user feedback.`,
+        `${first} owns both design and front-end, so an idea moves from prototype to shipped product without losing anything in handoff (90% faster design-to-dev handoff at ${job.company}).`,
       ])}\n\nThe goal isn't AI for its own sake: it's reaching a validated, well-crafted product faster.`,
     next: ["What's your design process?", "What results have you delivered?", "How can we work together?"],
   },

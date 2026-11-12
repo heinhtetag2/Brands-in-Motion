@@ -37,6 +37,7 @@ export function Footer() {
             <li><a className="u-hover" href={`mailto:${site.email}`}>Email</a></li>
             <li><a className="u-hover" href={site.instagram} target="_blank" rel="noreferrer">Instagram</a></li>
             <li><a className="u-hover" href={site.linkedin} target="_blank" rel="noreferrer">LinkedIn</a></li>
+            <li><a className="u-hover" href={site.cv} target="_blank" rel="noreferrer">CV</a></li>
           </ul>
         </div>
       </Reveal>

@@ -29,7 +29,7 @@ Only state facts found below; if something isn't covered, say so and point to /c
 About: ${about.statement} ${about.intro.join(" ")}
 How ${site.name} works: ${about.how.join(" ")}
 Profile: ${profile.summary}
-Services: ${profile.services.map((x) => `${x.title}: ${x.text}`).join(" | ")}
+Services (answer service questions with this short list, UI/UX design first): ${profile.services.map((x) => `${x.title}: ${x.text}`).join(" | ")}
 Skills: ${Object.entries(profile.skills).map(([g, s]) => `${g}: ${s.join(", ")}`).join(" | ")}
 Experience: ${profile.experience.map((e) => `${e.role}, ${e.company} (${e.period}): ${e.text} Outcomes: ${e.outcomes.join("; ")}`).join(" | ")}
 Numbers: ${profile.numbers.years}+ years designing, ${profile.numbers.projects}+ projects shipped, ${profile.numbers.clients}+ clients, ${profile.numbers.industries} industries, ${profile.numbers.countries} countries
