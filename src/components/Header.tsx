@@ -49,29 +49,18 @@ export function Header() {
   const { count, setOpen } = useCart();
   const ai = useAIPanel();
 
-  // Welcome tooltip for the AI button: shows a few seconds after load, until the visitor has used the assistant
-  const TIP_KEY = "ai-tip-done";
+  // Welcome tooltip for the AI button: shows a few seconds after every page load or refresh,
+  // then hides itself (or when dismissed / the assistant is opened).
   const [tip, setTip] = useState(false);
   useEffect(() => {
-    let done = false;
-    try {
-      done = localStorage.getItem(TIP_KEY) === "1";
-    } catch {}
-    if (done) return;
-    const show = setTimeout(() => setTip(true), 2800);
+    const show = setTimeout(() => setTip(true), 2000);
     const hide = setTimeout(() => setTip(false), 14000);
     return () => {
       clearTimeout(show);
       clearTimeout(hide);
     };
   }, []);
-  const dismissTip = (remember: boolean) => {
-    setTip(false);
-    if (!remember) return;
-    try {
-      localStorage.setItem(TIP_KEY, "1");
-    } catch {}
-  };
+  const dismissTip = () => setTip(false);
   const [findOpen, setFindOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -176,7 +165,7 @@ export function Header() {
     <div className="relative">
       <button
         onClick={() => {
-          dismissTip(true);
+          dismissTip();
           ai.toggle();
         }}
         title="Ask my AI"
@@ -232,7 +221,7 @@ export function Header() {
               aria-hidden="true"
             />
             <button
-              onClick={() => dismissTip(false)}
+              onClick={() => dismissTip()}
               aria-label="Dismiss tip"
               className="absolute right-2 top-2 grid size-6 place-items-center opacity-60 transition-opacity hover:opacity-100"
             >
@@ -255,7 +244,7 @@ export function Header() {
             </p>
             <button
               onClick={() => {
-                dismissTip(true);
+                dismissTip();
                 ai.toggle();
               }}
               className="mt-2.5 underline underline-offset-[3px] transition-opacity hover:opacity-70"
@@ -316,14 +305,12 @@ export function Header() {
         })),
       ]
     : [
-        ...main
-          .slice(0, 1)
-          .map((m) => ({
-            key: m.href,
-            label: m.label,
-            href: m.href,
-            active: m.match(pathname),
-          })),
+        ...main.slice(0, 1).map((m) => ({
+          key: m.href,
+          label: m.label,
+          href: m.href,
+          active: m.match(pathname),
+        })),
         {
           key: about.href,
           label: about.label,
@@ -336,14 +323,12 @@ export function Header() {
           href: works.href,
           active: works.match(pathname),
         },
-        ...main
-          .slice(1)
-          .map((m) => ({
-            key: m.href,
-            label: m.label,
-            href: m.href,
-            active: m.match(pathname),
-          })),
+        ...main.slice(1).map((m) => ({
+          key: m.href,
+          label: m.label,
+          href: m.href,
+          active: m.match(pathname),
+        })),
         {
           key: contact.href,
           label: contact.label,

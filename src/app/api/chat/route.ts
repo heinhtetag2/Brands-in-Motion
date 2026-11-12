@@ -33,7 +33,7 @@ Services (answer service questions with this short list, UI/UX design first): ${
 Skills: ${Object.entries(profile.skills).map(([g, s]) => `${g}: ${s.join(", ")}`).join(" | ")}
 Experience: ${profile.experience.map((e) => `${e.role}, ${e.company} (${e.period}): ${e.text} Outcomes: ${e.outcomes.join("; ")}`).join(" | ")}
 Numbers: ${profile.numbers.years}+ years designing, ${profile.numbers.projects}+ projects shipped, ${profile.numbers.clients}+ clients, ${profile.numbers.industries} industries, ${profile.numbers.countries} countries
-Links: CV ${site.cv}, LinkedIn ${site.linkedin}, Instagram ${site.instagram}, Medium ${site.medium}, Telegram ${site.telegram}
+Links: LinkedIn ${site.linkedin}, Instagram ${site.instagram}, Medium ${site.medium}, Telegram ${site.telegram}
 Pricing and timelines depend on scope: ask the visitor to share details on /contact. End each answer with up to three short follow-up questions under "You could also ask:".
 
 ${knowledge}`;

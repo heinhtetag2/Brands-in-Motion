@@ -54,23 +54,6 @@ export default function About() {
             <p>{p}</p>
           </Reveal>
         ))}
-        <Reveal className="!mt-[50px]">
-          <a href={site.cv} target="_blank" rel="noreferrer" className={pill}>
-            Download CV
-            <svg
-              viewBox="0 0 24 24"
-              className="arrow size-[1em]"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M12 4v12M6.500 10.500 12 16l5.500-5.500M5 20h14" />
-            </svg>
-          </a>
-        </Reveal>
       </div>
 
       <Row title="Services" rule="mt-[103px]" gap="mt-[66px]">
@@ -83,7 +66,9 @@ export default function About() {
                 </span>
                 <div>
                   <p>{sv.title}</p>
-                  <p className="mt-1 text-[0.72em] leading-[1.35] text-fg/65">{sv.text}</p>
+                  <p className="mt-1 text-[0.72em] leading-[1.35] text-fg/65">
+                    {sv.text}
+                  </p>
                 </div>
               </li>
             </Reveal>

@@ -66,8 +66,8 @@ const topics: Topic[] = [
     answer: () =>
       profile.experience
         .map((e) => `**${e.role}, ${e.company}** (${e.period})\n${e.text}\n${list(e.outcomes)}`)
-        .join("\n\n") + `\n\nFull details are in ${first}'s ${link("CV", site.cv)}.`,
-    next: ["What results have you delivered?", "What services do you offer?", "Can I see your CV?"],
+        .join("\n\n") + `\n\nMore on the ${link("About page", "/about")}.`,
+    next: ["What results have you delivered?", "What services do you offer?", "Show me the projects"],
   },
   {
     id: "results",
@@ -118,12 +118,6 @@ const topics: Topic[] = [
     next: ["What services do you offer?", "What's your design process?", "How can we work together?"],
   },
   {
-    id: "cv",
-    keys: ["cv", "resume", "résumé", "download"],
-    answer: () => `Here's ${first}'s ${link("CV", site.cv)} (opens Google Drive). For a quick overview, see the ${link("About page", "/about")}.`,
-    next: ["Tell me about your experience", "What skills do you have?", "How can we work together?"],
-  },
-  {
     id: "social",
     keys: ["linkedin", "instagram", "medium", "telegram", "social", "socials", "follow", "blog", "articles", "writing"],
     answer: () =>
@@ -133,7 +127,7 @@ const topics: Topic[] = [
         link("Medium", site.medium) + " (writing)",
         link("Telegram", site.telegram),
       ])}`,
-    next: ["How can we work together?", "Can I see your CV?", "Show me the projects"],
+    next: ["How can we work together?", "Tell me about your experience", "Show me the projects"],
   },
   {
     id: "jobs",

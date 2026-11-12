@@ -13,7 +13,7 @@ export const site = {
   linkedin: "https://www.linkedin.com/in/hein-htet-a67368260/",
   medium: "https://medium.com/@heincise",
   telegram: "https://t.me/heinhtet_gloria_11",
-  cv: "https://drive.google.com/file/d/1W5KjadqIV8ZTFSWIOn4zUrAIXeiJ7xx3/view?usp=sharing",
+  // cv: add the CV link here when it is ready, then re-add the "Download CV" button on the About page
 };
 
 /**
