@@ -7,7 +7,7 @@ import {
   type UIMessage,
 } from "ai";
 import { localAnswer } from "@/lib/answers";
-import { about, jobs, money, posts, products, site } from "@/lib/data";
+import { about, jobs, money, posts, products, profile, site } from "@/lib/data";
 
 // Everything the assistant knows about the site, kept compact so it fits in every request.
 const knowledge = [
@@ -28,11 +28,19 @@ Only state facts found below; if something isn't covered, say so and point to /c
 
 About: ${about.statement} ${about.intro.join(" ")}
 How ${site.name} works: ${about.how.join(" ")}
-Numbers: ${about.stats.map((x) => `${x.to}${x.suffix} ${x.label}`).join(", ")}
+Profile: ${profile.summary}
+Services: ${profile.services.map((x) => `${x.title}: ${x.text}`).join(" | ")}
+Skills: ${Object.entries(profile.skills).map(([g, s]) => `${g}: ${s.join(", ")}`).join(" | ")}
+Experience: ${profile.experience.map((e) => `${e.role}, ${e.company} (${e.period}): ${e.text} Outcomes: ${e.outcomes.join("; ")}`).join(" | ")}
+Numbers: ${profile.numbers.years}+ years designing, ${profile.numbers.projects}+ projects shipped, ${profile.numbers.clients}+ clients, ${profile.numbers.industries} industries, ${profile.numbers.countries} countries
+Links: CV ${site.cv}, LinkedIn ${site.linkedin}, Instagram ${site.instagram}, Medium ${site.medium}, Telegram ${site.telegram}
+Pricing and timelines depend on scope: ask the visitor to share details on /contact. End each answer with up to three short follow-up questions under "You could also ask:".
 
 ${knowledge}`;
 
-const connected = () => Boolean(process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN);
+// Only use the full AI model when an AI Gateway key is explicitly set. (Vercel adds a
+// VERCEL_OIDC_TOKEN to every deployment, so that alone doesn't mean AI Gateway is enabled.)
+const connected = () => Boolean(process.env.AI_GATEWAY_API_KEY);
 
 /** Streams a prepared answer word by word, so it reads like a live reply. */
 function streamLocal(text: string) {
@@ -59,9 +67,11 @@ export async function POST(req: Request) {
   // No AI model connected: answer from the site's own content (lib/answers.ts).
   // Add AI_GATEWAY_API_KEY to .env.local to switch to the full model.
   if (!connected()) {
-    const last = [...messages].reverse().find((m) => m.role === "user");
-    const question = last?.parts.map((p) => (p.type === "text" ? p.text : "")).join(" ") ?? "";
-    return streamLocal(localAnswer(question));
+    const asked = messages
+      .filter((m) => m.role === "user")
+      .map((m) => m.parts.map((p) => (p.type === "text" ? p.text : "")).join(" "));
+    const question = asked.pop() ?? "";
+    return streamLocal(localAnswer(question, asked));
   }
 
   const result = streamText({

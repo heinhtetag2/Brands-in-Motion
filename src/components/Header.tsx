@@ -149,10 +149,11 @@ export function Header() {
             transition={{ duration: 0.7, ease: easeExpo, delay: 0.35 }}
           />
           <span className="relative whitespace-pre">
-            {site.name} {site.role.slice(0, SELECTED)}
+            {ai.open ? site.name : `${site.name} ${site.role.slice(0, SELECTED)}`}
           </span>
         </span>
-        <span>{site.role.slice(SELECTED)}</span>
+        {/* While the AI panel is open the header is narrower, so the logo shows just the name */}
+        {!ai.open && <span>{site.role.slice(SELECTED)}</span>}
       </motion.span>
     </Link>
   );

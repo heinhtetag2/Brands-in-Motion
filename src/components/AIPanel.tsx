@@ -145,9 +145,7 @@ function Panel({ onClose }: { onClose: () => void }) {
                   <p className="max-w-[85%] rounded-[16px] bg-surface px-3.5 py-2">{text}</p>
                 </motion.div>
               ) : (
-                <motion.div key={m.id} className="leading-[1.45]" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <Rich text={text} onNavigate={() => {}} />
-                </motion.div>
+                <AssistantMessage key={m.id} text={text} onAsk={ask} done={!busy || m.id !== messages.at(-1)?.id} />
               );
             })}
             {status === "submitted" && (
@@ -195,5 +193,41 @@ function Panel({ onClose }: { onClose: () => void }) {
         )}
       </form>
     </motion.aside>
+  );
+}
+
+/** Assistant reply: the answer, then any "You could also ask:" lines as clickable follow-ups. */
+function AssistantMessage({ text, onAsk, done }: { text: string; onAsk: (q: string) => void; done: boolean }) {
+  const [body, more] = text.split(/\n\nYou could also ask:\n/);
+  const next = (more ?? "")
+    .split("\n")
+    .map((l) => l.replace(/^\s*[-*•]\s*/, "").trim())
+    .filter(Boolean);
+  return (
+    <motion.div className="leading-[1.45]" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <Rich text={body} onNavigate={() => {}} />
+      {done && next.length > 0 && (
+        <ul className="mt-4 space-y-1.5">
+          {next.map((q, i) => (
+            <motion.li
+              key={q}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: easeExpo, delay: i * 0.06 }}
+            >
+              <button
+                onClick={() => onAsk(q)}
+                className="group flex items-start gap-2 text-left text-[15px] text-fg/60 transition-colors hover:text-fg"
+              >
+                <span aria-hidden="true" className="transition-transform duration-500 ease-expo group-hover:translate-x-1">
+                  ↳
+                </span>
+                {q}
+              </button>
+            </motion.li>
+          ))}
+        </ul>
+      )}
+    </motion.div>
   );
 }

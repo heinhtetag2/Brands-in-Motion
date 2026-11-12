@@ -6,8 +6,73 @@ export const site = {
   /** Shown after the highlighted name in the header logo */
   role: "Product Designer",
   tagline: "Portfolio of Hein Htet, a product designer: UI/UX, websites and brand systems.",
-  instagram: "https://instagram.com",
   email: "heincise@gmail.com",
+  instagram: "https://www.instagram.com/izheinn/",
+  linkedin: "https://www.linkedin.com/in/hein-htet-a67368260/",
+  medium: "https://medium.com/@heincise",
+  telegram: "https://t.me/heinhtet_gloria_11",
+  cv: "https://drive.google.com/file/d/1W5KjadqIV8ZTFSWIOn4zUrAIXeiJ7xx3/view?usp=sharing",
+};
+
+/**
+ * Real profile, from hein-design-uiux.vercel.app/about. The AI assistant answers from this,
+ * so keep it accurate.
+ */
+export const profile = {
+  headline: "Designing experiences powered by AI thinking",
+  summary:
+    "I combine UI/UX craft with AI-driven workflows to design products that feel intuitive and ship faster.",
+  services: [
+    {
+      title: "AI-enhanced UX research & strategy",
+      text: "I use AI tools to accelerate user research, synthesize insights and define product direction, turning weeks of discovery into days without losing depth.",
+    },
+    {
+      title: "Design systems & pixel-perfect interfaces",
+      text: "From design tokens to production-ready components, I craft scalable design systems and high-fidelity interfaces that stay consistent across every touchpoint.",
+    },
+    {
+      title: "Rapid prototyping with AI workflows",
+      text: "I use AI-powered design and development tools to go from concept to interactive prototype fast, validating ideas early and iterating with real user feedback.",
+    },
+    {
+      title: "Usability testing & product validation",
+      text: "I validate designs with real users: usability sessions, honest feedback and tracking the outcomes that matter, then iterate until people genuinely succeed with the product.",
+    },
+    {
+      title: "Brand identity & visual direction",
+      text: "I shape how a product looks and feels beyond the interface (brand identity, illustration and motion) so the visuals tell the same story as the product.",
+    },
+  ],
+  skills: {
+    "Design & UX": ["UI/UX Design", "Design Systems", "Interaction Design", "UX Research & Testing", "Wireframing & Prototyping"],
+    "Brand & Visual": ["3D Illustration", "Visual Direction", "Branding", "Motion Design"],
+    "AI Workflow": ["AI-Assisted Design", "Prompt Engineering for Design", "AI Prototyping Tools", "Generative UI Exploration"],
+    "Strategy & Delivery": ["Product Thinking", "Design Sprint Facilitation", "Design-to-Dev Handoff", "Usability Audits"],
+  } as Record<string, string[]>,
+  numbers: { years: 2, projects: 24, clients: 20, industries: 8, countries: 4 },
+  experience: [
+    {
+      role: "UI/UX Designer",
+      company: "ITWIZARD (Korea)",
+      period: "Full time, 2 yrs 9 mos",
+      text: "Works across every stage of the product: framing the business problem, researching what users really need, prototyping, design systems, visual graphics and illustration, right through to shipping the software. Partners closely with stakeholders, clients and developers.",
+      highlights: [
+        "Starts from the business problem, turns it into a clear product idea and aligns it with stakeholders and clients",
+        "Runs agentic AI workflows to research, ideate and prototype in a fraction of the time",
+        "Pinpoints user problems and solves them fast, balancing user needs with business goals",
+      ],
+      outcomes: ["30% faster design-to-dev handoff", "Owns both design and front-end (UX + Dev), so nothing is lost in handoff", "20+ products launched"],
+    },
+    {
+      role: "Freelance Designer",
+      company: "Independent",
+      period: "Since 2024 – present",
+      text: "Works with startups and brands across the globe on product design, branding and motion, shipping end-to-end from first sketch to launch.",
+      highlights: ["Product design and UI for web and mobile apps", "Brand identity, visual direction and motion"],
+      outcomes: ["4 freelance projects shipped end-to-end"],
+    },
+  ],
 };
 
 /** Seed for <MotionArt>; each seed always renders the same animated piece. */
@@ -133,9 +198,9 @@ export const about = {
   numbersTitle: "By the Numbers",
   numbersIntro: "A quick snapshot of the work so far.",
   stats: [
-    { to: 5, decimals: 0, suffix: "+", label: "Years designing" },
-    { to: 30, decimals: 0, suffix: "+", label: "Projects shipped" },
-    { to: 15, decimals: 0, suffix: "+", label: "Happy clients" },
+    { to: 2, decimals: 0, suffix: "+", label: "Years designing" },
+    { to: 24, decimals: 0, suffix: "+", label: "Projects shipped" },
+    { to: 20, decimals: 0, suffix: "+", label: "Happy clients" },
   ],
 };
 
