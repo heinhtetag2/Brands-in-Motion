@@ -40,7 +40,21 @@ export default function Home() {
               See my works <span className="arrow">→</span>
             </Link>
             <Link href="/contact" className="pill w-[209px]">
-              Get in touch <span className="arrow">→</span>
+              Get in touch
+              {/* Simple mail icon */}
+              <svg
+                viewBox="0 0 24 24"
+                className="size-[1.05em] shrink-0"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <rect x="3" y="5" width="18" height="14" rx="2" />
+                <path d="m3.500 7 8.500 6.500L20.500 7" />
+              </svg>
             </Link>
           </Reveal>
           <Reveal delay={0.15} className="t-lg md:w-[32.7%]">
@@ -57,11 +71,6 @@ export default function Home() {
             <PostCard key={p.slug} post={p} index={i} />
           ))}
         </div>
-        <Reveal className="mt-[80px] flex justify-center">
-          <Link href="/works" className="pill w-[264px]">
-            View all works <span className="arrow">→</span>
-          </Link>
-        </Reveal>
       </section>
 
       {/* About */}

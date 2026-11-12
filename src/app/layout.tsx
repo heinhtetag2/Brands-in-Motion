@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { DM_Sans, Instrument_Serif } from "next/font/google";
 import { AIPanelProvider } from "@/components/AIPanel";
 import { CartProvider } from "@/components/Cart";
-import { CookieBanner } from "@/components/CookieBanner";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { site } from "@/lib/data";
@@ -43,8 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             {children}
           </main>
           <Footer />
-          {/* AI assistant is built (components/AskAI.tsx + api/chat) but hidden for now — swap back in when ready */}
-          <CookieBanner />
+          {/* Cookie bar is hidden for now. To bring it back, import CookieBanner from "@/components/CookieBanner" and render <CookieBanner /> here. */}
           </AIPanelProvider>
         </CartProvider>
       </body>
