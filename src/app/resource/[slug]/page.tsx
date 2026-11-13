@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { PostCard } from "@/components/PostCard";
 import { ProjectHero } from "@/components/ProjectHero";
 import { Reveal } from "@/components/Reveal";
+import { SectionNav } from "@/components/SectionNav";
 import { VideoBlock } from "@/components/VideoBlock";
 import { getPost, posts } from "@/lib/data";
 
@@ -47,6 +48,11 @@ async function Article({
 
   return (
     <article>
+      <SectionNav
+        items={[
+          ...post.sections.map((s, k) => ({ id: `s-${k}`, label: `${String(k + 1).padStart(2, "0")}  ${s.q}` })),
+        ]}
+      />
       <ProjectHero
         seed={`${post.image}-hero`}
         word={post.label.split(" ")[0]}
@@ -73,6 +79,35 @@ async function Article({
         ))}
       </div>
 
+      {post.ux && (
+        <div className="t-lg mt-[60px] md:ml-[42.7%] md:w-[48.7%]">
+          <dl className="grid grid-cols-2 gap-x-8 gap-y-6 border-t border-[#808080] pt-6">
+            {[
+              ["Role", post.ux.role],
+              ["Timeline", post.ux.timeline],
+              ["Platform", post.ux.platform],
+              ["Tools", post.ux.tools.join(", ")],
+            ].map(([k, v]) => (
+              <Reveal key={k}>
+                <dt className="text-muted">{k}</dt>
+                <dd>{v}</dd>
+              </Reveal>
+            ))}
+          </dl>
+          <Reveal delay={0.1} className="mt-10">
+            <a
+              href={post.ux.prototype.url}
+              target="_blank"
+              rel="noreferrer"
+              className="pill w-[264px] max-w-full"
+            >
+              {post.ux.prototype.label ?? "Live prototype"}
+              <span aria-hidden="true">↗</span>
+            </a>
+          </Reveal>
+        </div>
+      )}
+
       <div className="mt-[150px]">
         <VideoBlock
           src={`${post.image}-reel`}
@@ -85,7 +120,7 @@ async function Article({
       {post.sections.map((s, k) => {
         const left = k % 2 === 0;
         return (
-          <section key={k} className="mt-[150px]">
+          <section key={k} id={`s-${k}`} className="mt-[150px] scroll-mt-24">
             <div className={`t-lg ${left ? LEFT : RIGHT}`}>
               <Reveal>
                 <p>
@@ -101,6 +136,16 @@ async function Article({
                   </Reveal>
                 ))}
               </div>
+              {s.q === "Outcome" && post.ux?.results && (
+                <dl className="mt-10 grid grid-cols-3 gap-x-6">
+                  {post.ux.results.map((r, i) => (
+                    <Reveal key={r.label} delay={i * 0.08}>
+                      <dd className="text-[clamp(1.6rem,2.6vw,3rem)] leading-none tracking-[-0.02em]">{r.value}</dd>
+                      <dt className="mt-2 text-[0.72em] leading-[1.25] text-fg/60">{r.label}</dt>
+                    </Reveal>
+                  ))}
+                </dl>
+              )}
             </div>
 
             {s.quote && (

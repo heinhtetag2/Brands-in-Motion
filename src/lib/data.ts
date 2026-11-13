@@ -86,6 +86,19 @@ export type Post = {
   sections: QA[];
   /** Optional real image for the showreel block (a path under /public); otherwise animated art is used */
   cover?: string;
+  /** UI/UX case-study details. When present the project page shows the facts and a live-prototype button. */
+  ux?: UXCase;
+};
+
+export type UXCase = {
+  role: string;
+  timeline: string;
+  platform: string;
+  tools: string[];
+  /** Link to the live prototype (Figma prototype, deployed demo, etc.) */
+  prototype: { url: string; label?: string };
+  /** Headline results shown as big numbers in the Outcome section */
+  results?: Array<{ value: string; label: string }>;
 };
 
 const body: QA[] = [
@@ -115,6 +128,61 @@ const body: QA[] = [
     q: "What advice would you give someone starting out?",
     a: [
       "Make small things often. Post them. Ask studios you admire what they'd change. The feedback loop matters more than the software.",
+    ],
+  },
+];
+
+/* UI/UX case study template. Copy this shape for each new showcase: facts + prototype link + Q&A style sections. */
+const resetUX: UXCase = {
+  role: "UI/UX Designer",
+  timeline: "8 weeks",
+  platform: "Web and mobile app",
+  tools: ["Figma", "FigJam", "Claude", "Maze", "Notion"],
+  // Replace with your own prototype link
+  prototype: { url: "https://www.figma.com/proto/", label: "Live prototype" },
+  // Sample numbers: replace with your real results
+  results: [
+    { value: "94%", label: "Task completion, up from 62%" },
+    { value: "-48%", label: "Average setup time" },
+    { value: "3", label: "Steps instead of 9" },
+  ],
+};
+
+const resetCase: QA[] = [
+  {
+    q: "The problem",
+    a: [
+      "Users were dropping off during onboarding. They reached the first setup screen, hit a wall of unfamiliar terms and left without finishing.",
+      "The goal was to make the first five minutes feel guided and human, without adding steps.",
+    ],
+    quote: "If the first minute feels hard, nobody stays for the second.",
+  },
+  {
+    q: "Research and insights",
+    a: [
+      "I ran eight user interviews and reviewed session recordings to see where people hesitated. Three patterns came up again and again: unclear wording, too many choices at once and no sense of progress.",
+      "I mapped these on a journey map and ranked them by how often they blocked users, so the design work started with the biggest problem.",
+    ],
+  },
+  {
+    q: "Design process",
+    a: [
+      "Low-fidelity flows came first, tested on paper and in clickable wireframes. Each round removed a screen or a decision until the path felt effortless.",
+      "I then built the visual layer on a small design system (type, spacing, components), so every screen stayed consistent and handoff to developers was fast.",
+    ],
+    quote: "Fewer decisions on each screen means more people reach the end.",
+  },
+  {
+    q: "The solution",
+    a: [
+      "A three-step guided setup with plain-language labels, a visible progress bar and sensible defaults. Advanced options moved behind an optional step.",
+      "Try the live prototype to click through the full flow.",
+    ],
+  },
+  {
+    q: "Outcome",
+    a: [
+      "In usability testing, task completion rose from 62% to 94%, and the average setup time dropped by almost half.",
     ],
   },
 ];
@@ -165,6 +233,7 @@ export const posts: Post[] = raw.map(([title, label, category], i) => ({
     "From early sketches to final delivery, this is a look at the decisions — big and small — that shaped the system.",
   ],
   sections: body,
+  ...(slugify(title) === "reset-building-empathy-through-motion" ? { sections: resetCase, ux: resetUX } : {}),
   ...(slugify(title) === "circuit" ? { cover: "/work/circuit-showreel.webp" } : {}),
 }));
 
