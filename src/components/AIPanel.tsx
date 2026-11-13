@@ -5,12 +5,15 @@ import { AnimatePresence, motion } from "motion/react";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { site } from "@/lib/data";
 import { errorText, Rich } from "./AskAI";
+import { SelectionAsk } from "./SelectionAsk";
 import { easeExpo } from "./Reveal";
 
 const PANEL_W = 420;
+/** Display name of the assistant */
+export const LLM_NAME = `${site.name.replace(/\s+/g, "")}LLM`;
 const suggestions = [`What does ${site.name} do?`, "What was the design process on your projects?", "How can we work together?"];
 
-const Ctx = createContext<{ open: boolean; toggle: () => void } | null>(null);
+const Ctx = createContext<{ open: boolean; toggle: () => void; askAbout: (selected: string) => void } | null>(null);
 export function useAIPanel() {
   const c = useContext(Ctx);
   if (!c) throw new Error("useAIPanel must be used inside AIPanelProvider");
@@ -20,6 +23,8 @@ export function useAIPanel() {
 /** Holds the open state, shifts the page over on desktop, and renders the panel. */
 export function AIPanelProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  // Text selected on the page: shown as a quote card above the input, then the visitor asks about it
+  const [quote, setQuote] = useState<string | null>(null);
 
   // The page (and fixed header) read this to make room for the panel on desktop
   useEffect(() => {
@@ -33,14 +38,24 @@ export function AIPanelProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <Ctx.Provider value={{ open, toggle: () => setOpen((v) => !v) }}>
+    <Ctx.Provider
+      value={{
+        open,
+        toggle: () => setOpen((v) => !v),
+        askAbout: (text) => {
+          setQuote(text);
+          setOpen(true);
+        },
+      }}
+    >
       {children}
-      <AnimatePresence>{open && <Panel onClose={() => setOpen(false)} />}</AnimatePresence>
+      <SelectionAsk />
+      <AnimatePresence>{open && <Panel onClose={() => setOpen(false)} quote={quote} onClearQuote={() => setQuote(null)} />}</AnimatePresence>
     </Ctx.Provider>
   );
 }
 
-function Panel({ onClose }: { onClose: () => void }) {
+function Panel({ onClose, quote, onClearQuote }: { onClose: () => void; quote: string | null; onClearQuote: () => void }) {
   const { messages, sendMessage, status, stop, error, clearError, setMessages } = useChat();
   const [input, setInput] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
@@ -60,16 +75,23 @@ function Panel({ onClose }: { onClose: () => void }) {
     const q = text.trim();
     if (!q || busy) return;
     if (error) clearError();
-    sendMessage({ text: q });
+    // With a selected quote attached, the question is about that text
+    sendMessage({ text: quote ? `${QUOTE_PREFIX}${quote}"\n\n${q}` : q });
+    if (quote) onClearQuote();
     setInput("");
   };
+
+  // A new selection arrives: focus the input so the visitor can type their question
+  useEffect(() => {
+    if (quote) inputRef.current?.focus();
+  }, [quote]);
 
   const icon = "grid size-8 place-items-center rounded-full transition-colors hover:bg-surface";
 
   return (
     <motion.aside
       role="complementary"
-      aria-label={`Ask ${site.name}`}
+      aria-label={LLM_NAME}
       className="fixed inset-y-0 right-0 z-[58] flex w-full flex-col border-l border-line bg-bg text-fg sm:w-[420px]"
       initial={{ x: "100%" }}
       animate={{ x: 0 }}
@@ -77,7 +99,7 @@ function Panel({ onClose }: { onClose: () => void }) {
       transition={{ duration: 0.6, ease: easeExpo }}
     >
       <div className="flex h-[var(--header-h)] shrink-0 items-center justify-between px-6">
-        <p className="t-nav">Ask {site.name}</p>
+        <p className="t-nav">{LLM_NAME}</p>
         <div className="flex items-center gap-1">
           <button
             className={icon}
@@ -142,7 +164,7 @@ function Panel({ onClose }: { onClose: () => void }) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, ease: easeExpo }}
                 >
-                  <p className="max-w-[85%] rounded-[16px] bg-surface px-3.5 py-2">{text}</p>
+                  <UserBubble text={text} />
                 </motion.div>
               ) : (
                 <AssistantMessage key={m.id} text={text} onAsk={ask} done={!busy || m.id !== messages.at(-1)?.id} />
@@ -165,6 +187,27 @@ function Panel({ onClose }: { onClose: () => void }) {
         )}
       </div>
 
+      <AnimatePresence initial={false}>
+        {quote && (
+          <motion.div
+            key="quote"
+            className="shrink-0 overflow-hidden px-6"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: easeExpo }}
+          >
+            <div className="mb-2 flex items-start gap-3 bg-surface px-4 py-3 text-fg/70">
+              <span aria-hidden="true" className="font-serif text-[28px] leading-[0.8]">“</span>
+              <p className="line-clamp-3 min-w-0 flex-1 text-[15px] leading-[1.4]">{quote}</p>
+              <button onClick={onClearQuote} className="shrink-0 text-fg/50 hover:text-fg" aria-label="Remove quote">
+                ✕
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -176,7 +219,7 @@ function Panel({ onClose }: { onClose: () => void }) {
           ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={`Ask about ${site.name}…`}
+          placeholder={quote ? "Ask about this quote…" : `Ask about ${site.name}…`}
           aria-label={`Ask about ${site.name}`}
           className="min-w-0 flex-1 bg-transparent py-1.5 outline-none placeholder:text-fg/40"
         />
@@ -229,5 +272,22 @@ function AssistantMessage({ text, onAsk, done }: { text: string; onAsk: (q: stri
         </ul>
       )}
     </motion.div>
+  );
+}
+
+const QUOTE_PREFIX = 'Regarding: "';
+
+/** A user message; when it carries a selected quote, show the quote card above the question. */
+function UserBubble({ text }: { text: string }) {
+  const m = text.match(/^Regarding: "([\s\S]*?)"\n\n([\s\S]*)$/);
+  if (!m) return <p className="max-w-[85%] rounded-[16px] bg-surface px-3.5 py-2">{text}</p>;
+  return (
+    <div className="flex max-w-[90%] flex-col items-end gap-2">
+      <div className="flex gap-3 bg-surface px-4 py-3 text-fg/60">
+        <span aria-hidden="true" className="font-serif text-[28px] leading-[0.8]">“</span>
+        <p className="line-clamp-4 text-[15px] leading-[1.4]">{m[1]}</p>
+      </div>
+      <p className="rounded-[16px] bg-surface px-3.5 py-2">{m[2]}</p>
+    </div>
   );
 }

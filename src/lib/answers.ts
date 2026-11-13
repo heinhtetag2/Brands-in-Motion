@@ -28,7 +28,7 @@ const topics: Topic[] = [
     id: "who",
     keys: ["who", "yourself", "introduce", "background", "bio", "hein", "htet", "what does", "what do you do", "designer"],
     answer: () =>
-      `${site.name} is a ${site.roleInline} who combines design craft with AI-driven workflows to design products that feel intuitive and ship faster.\n\n` +
+      `${site.name} is a ${site.roleInline} who combines design craft with AI-driven workflows to design products that feel intuitive and ship faster. Besides product and UI design, ${first} does illustration, visual design and branding, and is always learning new ways to work with AI.\n\n` +
       `Right now ${first} is a **${job.role} at ${job.company}** (${job.period.toLowerCase()}) and also freelances for startups and brands around the world. ` +
       `So far that's **${n.projects}+ projects shipped** for **${n.clients}+ clients** across **${n.industries} industries** in **${n.countries} countries**.\n\n` +
       `More on the ${link("About page", "/about")}.`,
@@ -46,19 +46,44 @@ const topics: Topic[] = [
     keys: ["skill", "skills", "tool", "tools", "figma", "software", "stack", "expertise", "good at", "strength"],
     answer: () =>
       `${first}'s skills, grouped:\n${list(Object.entries(profile.skills).map(([g, s]) => `**${g}**: ${s.join(", ")}`))}\n\n` +
+      `Day to day, ${first} works in ${profile.tools.join(", ")} and other tools for brainstorming, research and design.\n\n` +
       `${first} also owns front-end development, which is why handoff to developers is smooth.`,
     next: ["How do you use AI in design?", "Tell me about your experience", "Show me the projects"],
   },
   {
     id: "ai",
-    keys: ["ai", "artificial", "prompt", "chatgpt", "claude", "automation", "faster", "generative"],
+    keys: ["how do you work with ai", "work with ai", "use ai", "working with ai", "ai", "artificial", "prompt", "chatgpt", "claude", "automation", "faster", "generative"],
     answer: () =>
-      `AI is central to how ${first} works:\n${list([
+      `AI is central to how ${first} works. ${first} treats it as a partner: ${third(profile.aiMethod.replace(/^Brainstorms/, "I brainstorm"))}\n\nIn practice:\n${list([
         `${first} uses AI tools to speed up user research, synthesis and product direction, turning weeks of discovery into days.`,
         `${first} prototypes with AI-powered design and development tools, so ideas are validated early with real user feedback.`,
         `${first} owns both design and front-end, so an idea moves from prototype to shipped product without losing anything in handoff (90% faster design-to-dev handoff at ${job.company}).`,
       ])}\n\nThe goal isn't AI for its own sake: it's reaching a validated, well-crafted product faster.`,
     next: ["What's your design process?", "What results have you delivered?", "How can we work together?"],
+  },
+  {
+    id: "facts",
+    keys: ["where", "location", "live", "country", "myanmar", "burma", "language", "languages", "speak", "english", "remote", "timezone", "based", "from"],
+    answer: () =>
+      `${first} is based in **${profile.location}** and speaks **${profile.languages.join(" and ")}**. ${profile.availability}.\n\nIf you have a project in mind, the quickest way is the ${link("Contact page", "/contact")}.`,
+    next: ["How can we work together?", "How much does a project cost?", "Show me the projects"],
+  },
+  {
+    id: "creative",
+    keys: ["illustration", "illustrate", "illustrator", "visual", "visuals", "branding", "brand", "logo", "identity", "graphic", "creative", "art"],
+    answer: () =>
+      `Beyond product design, ${first} also does **illustration, visual design and branding**, and uses AI tools across all of it to explore more ideas in less time.\n\n` +
+      `The same thinking runs through everything: start from the problem, explore widely, then craft the details until the result feels clear and consistent. ` +
+      `See the ${link("Works page", "/works")} for examples.`,
+    next: ["How do you use AI in design?", "Show me the projects", "How can we work together?"],
+  },
+  {
+    id: "learning",
+    keys: ["learning", "learn", "agent", "agents", "agentic", "evolving", "evolve", "future", "growing", "curious", "new tools"],
+    answer: () =>
+      `${first} is always evolving. Right now ${first} is learning **AI agent workflows** and working out how to bring them into the design process, so that research, ideas and visuals happen faster without losing craft.\n\n` +
+      `It's a hands-on approach: try the new tool, test it on real work, keep what actually helps. That curiosity is part of how ${first} keeps designs and workflow fresh.`,
+    next: ["How do you use AI in design?", "What's your design process?", "How can we work together?"],
   },
   {
     id: "experience",
@@ -113,7 +138,7 @@ const topics: Topic[] = [
     id: "price",
     keys: ["price", "pricing", "cost", "rate", "rates", "budget", "charge", "fee", "quote", "how much", "timeline", "how long", "deadline"],
     answer: () =>
-      `It depends on the scope: a landing page, a full product and a design system are very different jobs. ` +
+      `${first}'s pricing isn't fixed yet and depends on the scope: a landing page, a full product and a design system are very different jobs. ` +
       `The best way to get a clear quote and timeline is to share a few details on the ${link("Contact page", "/contact")}: what you're building, your deadline and your budget range. ${first} will reply with a proposal.`,
     next: ["What services do you offer?", "What's your design process?", "How can we work together?"],
   },
@@ -185,6 +210,35 @@ const withNext = (body: string, next: string[]) =>
 
 /** `history` is the earlier user questions, oldest first. */
 export function localAnswer(question: string, history: string[] = []): string {
+  // Text selected on the page, with the visitor's own question about it
+  const selected = question.match(/^Regarding: "([\s\S]+?)"\n\n([\s\S]*)$/);
+  if (selected) {
+    const snippet = selected[1].trim();
+    const shown = snippet.length > 140 ? `${snippet.slice(0, 140).trim()}…` : snippet;
+    const intro = `You selected: “${shown}”`;
+
+    // Is it from a project page? Say which project and section it belongs to.
+    const probe = snippet.slice(0, 40).toLowerCase();
+    for (const post of posts) {
+      const section = post.sections.find((sec) => sec.q.toLowerCase().includes(probe) || sec.a.some((a) => a.toLowerCase().includes(probe)));
+      const inIntro = post.intro.some((a) => a.toLowerCase().includes(probe));
+      if (!section && !inIntro) continue;
+      const where = section ? `the “${section.q}” part of` : "the introduction of";
+      const gist = section ? (section.quote ? `The key idea there: “${section.quote}”` : section.a[0]) : post.intro[0];
+      return withNext(
+        `${intro}\n\nThis is from ${where} **${post.title}**, a ${post.category.toLowerCase()} project with ${post.label}.\n\n${gist}\n\nRead the full case study: ${link(post.title, `/resource/${post.slug}`)}.`,
+        ["What's your design process?", "Show me the projects", "How can we work together?"],
+      );
+    }
+
+    const topic = pick(words(`${selected[2]} ${snippet}`));
+    if (topic) return withNext(`${intro}\n\nHere's the context from ${first}'s site:\n\n${topic.answer(words(snippet))}`, topic.next);
+    return withNext(
+      `${intro}\n\nThat's part of ${first}'s work on this site. I can't break that exact line down, but I can explain the project, the process behind it or how ${first} works. For anything specific, ${link("send a message", "/contact")} and ${first} will reply personally.`,
+      ["What's your design process?", "Show me the projects", "How can we work together?"],
+    );
+  }
+
   const text = words(question);
 
   // A project mentioned by name

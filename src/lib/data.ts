@@ -39,6 +39,25 @@ export const profile = {
     "AI Workflow": ["AI-Assisted Design", "Prompt Engineering for Design", "AI Prototyping Tools", "Generative UI Exploration"],
     "Strategy & Delivery": ["Product Thinking", "Design Sprint Facilitation", "Design-to-Dev Handoff", "Usability Audits"],
   } as Record<string, string[]>,
+  /** Personal details, used by the AI assistant (not shown on the site yet) */
+  location: "Myanmar",
+  languages: ["English", "Myanmar"],
+  availability: "Open to remote work with teams in many regions",
+  pricing: "Not decided yet; depends on the scope, so share details through the contact page",
+  tools: ["Figma", "FigJam", "Claude", "ChatGPT", "Notion"],
+  /** How Hein works with AI, in his own words */
+  aiMethod:
+    "Brainstorms with AI assistants. Hein spots the gaps in what the AI gives and fills them with his design judgment, and the AI fills his gaps in return, so they learn from each other while solving the problem together.",
+  /** Extra background for the AI assistant only (not shown on the site). Add more facts here and it will use them. */
+  notes: [
+    "Hein is a product designer and UI designer. UI/UX is the core of the work.",
+    "Besides product design, Hein does illustration, visual design and branding, and uses AI tools across all of it to move faster and explore more ideas.",
+    "Hein is actively learning AI agent workflows and bringing them into the design process. He is always evolving and likes to try new tools and ways of working.",
+    "Hein is based in Myanmar, speaks English and Myanmar, and is available for remote jobs with teams in many regions. Pricing is not decided yet.",
+    "Hein's daily tools include Claude, ChatGPT, Notion, FigJam and Figma, plus others, for brainstorming, research and design.",
+    "Hein works with AI as a partner: he sees the gaps in what the AI produces and fills them, and the AI fills his gaps, so each learns from the other while solving the problem.",
+    "Hein likes to design and also understand the front-end, so designs reach developers clearly.",
+  ],
   numbers: { years: 2, projects: 24, clients: 20, industries: 8, countries: 4 },
   experience: [
     {
