@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Counter } from "@/components/Counter";
-import { Reveal, SplitText } from "@/components/Reveal";
+import { FlexImage, Reveal, SplitText } from "@/components/Reveal";
 import { about, profile, site } from "@/lib/data";
 
 export const metadata: Metadata = { title: "About" };
@@ -48,12 +49,26 @@ export default function About() {
         <SplitText text={about.statement} className="t-h1" delay={0.1} />
       </div>
 
-      <div className="t-lg mt-[57px] space-y-[0.66em] md:ml-[50.4%] md:w-[41%] max-md:mt-16">
-        {about.intro.map((p) => (
-          <Reveal key={p}>
-            <p>{p}</p>
-          </Reveal>
-        ))}
+      <div className="mt-[57px] flex flex-col gap-10 max-md:mt-16 md:flex-row md:items-start md:gap-0">
+        {/* Portrait: a modest 4:5 window that wipes in like the site's other images */}
+        <FlexImage className="w-[58%] max-w-[300px] md:ml-[4.2%] md:w-[24%] md:max-w-none">
+          <Image
+            src="/work/hein-portrait-2.jpg"
+            alt={`${site.name}, ${site.roleInline}, sitting by a window`}
+            width={900}
+            height={1125}
+            sizes="(min-width: 768px) 24vw, 58vw"
+            className="block h-auto w-full"
+            priority
+          />
+        </FlexImage>
+        <div className="t-lg space-y-[0.66em] md:ml-[22.2%] md:w-[41%]">
+          {about.intro.map((p) => (
+            <Reveal key={p}>
+              <p>{p}</p>
+            </Reveal>
+          ))}
+        </div>
       </div>
 
       <Row title="Services" rule="mt-[103px]" gap="mt-[66px]">
