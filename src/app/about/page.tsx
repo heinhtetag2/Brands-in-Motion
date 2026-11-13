@@ -7,6 +7,14 @@ import { about, profile, site } from "@/lib/data";
 
 export const metadata: Metadata = { title: "About" };
 
+// Name and what each tool is used for
+const tools: Array<[string, string]> = [
+  ["Figma", "Interface design, design systems and clickable prototypes."],
+  ["FigJam", "Flows, workshops and mapping out problems with the team."],
+  ["Claude & ChatGPT", "Brainstorming, research, copy and ideas. Working with AI as a partner."],
+  ["Notion", "Briefs, research notes and planning in one place."],
+];
+
 const pill = "pill w-[264px] max-w-full text-muted hover:text-bg";
 
 function Row({
@@ -135,11 +143,24 @@ export default function About() {
                 {group}
               </p>
               <p className="mt-1 text-[0.8em] leading-[1.35]">
-                {items.join(", ")}
+                {items.join(" · ")}
               </p>
             </Reveal>
           ))}
         </div>
+      </Row>
+
+      <Row title="Tools" rule="mt-[144px]" gap="mt-[65px]">
+        <ul className="space-y-[1.4em]">
+          {tools.map(([name, use]) => (
+            <Reveal key={name}>
+              <li>
+                <p>{name}</p>
+                <p className="mt-1 text-[0.72em] leading-[1.35] text-fg/65">{use}</p>
+              </li>
+            </Reveal>
+          ))}
+        </ul>
       </Row>
 
       <Row title={about.howTitle} rule="mt-[144px]" gap="mt-[65px]">

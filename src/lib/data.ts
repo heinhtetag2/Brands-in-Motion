@@ -29,14 +29,14 @@ export const profile = {
     { title: "UI/UX design", text: "Web and mobile interfaces, from wireframes to polished, production-ready screens." },
     { title: "UX research & strategy", text: "Understand your users, find the real problem and set the product direction, sped up with AI tools." },
     { title: "Design systems", text: "Tokens and reusable components that keep every screen consistent." },
-    { title: "Prototyping", text: "Clickable prototypes that test ideas with real feedback before anything is built." },
-    { title: "Usability testing", text: "Real users and honest feedback, improved until people succeed with the product." },
     { title: "Brand & motion", text: "Brand identity, illustration and motion that match the product." },
   ],
   skills: {
     "Design & UX": ["UI/UX Design", "Design Systems", "Interaction Design", "UX Research & Testing", "Wireframing & Prototyping"],
     "Brand & Visual": ["3D Illustration", "Visual Direction", "Branding", "Motion Design"],
     "AI Workflow": ["AI-Assisted Design", "Prompt Engineering for Design", "AI Prototyping Tools", "Generative UI Exploration"],
+    // Add or remove items to match what you really know
+    "Technical knowledge": ["HTML", "CSS", "React", "Next.js"],
     "Strategy & Delivery": ["Product Thinking", "Design Sprint Facilitation", "Design-to-Dev Handoff", "Usability Audits"],
   } as Record<string, string[]>,
   /** Personal details, used by the AI assistant (not shown on the site yet) */
