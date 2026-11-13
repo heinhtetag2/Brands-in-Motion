@@ -15,12 +15,15 @@ export function VideoBlock({
   caption,
   word,
   style,
+  cover,
 }: {
   src: string;
   ratio?: string;
   caption?: string;
   word?: string;
   style?: ArtStyle;
+  /** Real image to show instead of the animated art */
+  cover?: string;
 }) {
   const [playing, setPlaying] = useState(true);
   return (
@@ -42,7 +45,12 @@ export function VideoBlock({
           animate={{ scale: 1 }}
           transition={{ duration: 0.6, ease: easeExpo }}
         >
-          <MotionArt seed={src} word={word} style={style} className={playing ? "" : "ma-paused"} />
+          {cover ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={cover} alt={caption ?? ""} className="size-full object-cover" />
+          ) : (
+            <MotionArt seed={src} word={word} style={style} className={playing ? "" : "ma-paused"} />
+          )}
         </motion.div>
         <span
           className={`absolute left-1/2 top-1/2 flex size-[120px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-[opacity,transform] duration-500 group-hover:scale-105 max-md:size-16 ${

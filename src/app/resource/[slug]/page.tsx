@@ -77,6 +77,7 @@ async function Article({
         <VideoBlock
           src={`${post.image}-reel`}
           caption={`Showreel — ${post.label}`}
+          cover={post.cover}
           word={post.label.split(" ")[0]}
         />
       </div>

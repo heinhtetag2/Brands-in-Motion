@@ -84,6 +84,8 @@ export type Post = {
   tags: string[];
   intro: string[];
   sections: QA[];
+  /** Optional real image for the showreel block (a path under /public); otherwise animated art is used */
+  cover?: string;
 };
 
 const body: QA[] = [
@@ -163,6 +165,7 @@ export const posts: Post[] = raw.map(([title, label, category], i) => ({
     "From early sketches to final delivery, this is a look at the decisions — big and small — that shaped the system.",
   ],
   sections: body,
+  ...(slugify(title) === "circuit" ? { cover: "/work/circuit-showreel.webp" } : {}),
 }));
 
 export const getPost = (slug: string) => posts.find((p) => p.slug === slug);

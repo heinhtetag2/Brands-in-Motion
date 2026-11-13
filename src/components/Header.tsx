@@ -415,7 +415,7 @@ export function Header() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="gutter fixed inset-0 z-40 flex flex-col bg-bg pb-[18vh] pt-[calc(var(--header-h)+30vh)] xl:hidden"
+            className="gutter fixed inset-0 z-40 flex flex-col bg-bg pb-[18vh] pt-[calc(var(--header-h)+20vh)] xl:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
